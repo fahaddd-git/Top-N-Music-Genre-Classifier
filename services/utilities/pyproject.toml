@@ -1,16 +1,16 @@
 [tool.poetry]
 name = "utilities"
 version = "0.1.0"
-description = ""
+description = "Shared utilities"
 authors = [
-    "Fahad Awan <awan.fahad@gmail.com>",
-    "Donato Quartuccia <66536458+donatosaur@users.noreply.github.com>",
-    "Ethan Rietz <ewrietz@gmail.com>",
+    "Fahad Awan",
+    "Donato Quartuccia",
+    "Ethan Rietz",
 ]
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
+librosa = "^0.9.2"
 
 
 [build-system]

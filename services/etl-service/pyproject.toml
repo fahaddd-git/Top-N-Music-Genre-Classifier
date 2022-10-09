@@ -1,13 +1,12 @@
 [tool.poetry]
 name = "etl-service"
 version = "0.1.0"
-description = ""
+description = "ETL data pipeline"
 authors = [
-    "Fahad Awan <awan.fahad@gmail.com>",
-    "Donato Quartuccia <66536458+donatosaur@users.noreply.github.com>",
-    "Ethan Rietz <ewrietz@gmail.com>",
+    "Fahad Awan",
+    "Donato Quartuccia",
+    "Ethan Rietz",
 ]
-readme = "README.md"
 packages = [{include = "etl_service"}]
 
 [tool.poetry.dependencies]
