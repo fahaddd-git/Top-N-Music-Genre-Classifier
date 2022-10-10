@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "prediction-api"
+version = "0.1.0"
+description = "Genre prediction API"
+authors = [
+    "Fahad Awan",
+    "Donato Quartuccia",
+    "Ethan Rietz",
+]
+packages = [{include = "prediction_api"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.85.0"
+uvicorn = "^0.18.3"
+utilities = {path = "../utilities"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "etl-service"
+version = "0.1.0"
+description = "ETL data pipeline"
+authors = [
+    "Fahad Awan",
+    "Donato Quartuccia",
+    "Ethan Rietz",
+]
+packages = [{include = "etl_service"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+utilities = {path = "../utilities"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

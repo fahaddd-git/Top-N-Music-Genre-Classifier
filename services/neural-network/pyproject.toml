@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "neural-network"
+version = "0.1.0"
+description = "Model-generating neural network service"
+authors = [
+    "Fahad Awan",
+    "Donato Quartuccia",
+    "Ethan Rietz",
+]
+packages = [{include = "neural_network"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+utilities = {path = "../utilities"}
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
