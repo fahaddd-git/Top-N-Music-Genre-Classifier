@@ -21,6 +21,10 @@ See the section about [running tests](https://facebook.github.io/create-react-ap
 Builds the app for production to the `build` folder.\
 See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
 
+### `npm prepare-husky`
+
+Installs husky and pre-commit hook
+
 ## Learn More
 
 You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started)\
