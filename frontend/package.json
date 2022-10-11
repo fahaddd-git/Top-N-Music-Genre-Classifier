@@ -24,6 +24,9 @@
       "react-app/jest"
     ]
   },
+  "lint-staged": {
+    "*.{ts,tsx}": "eslint"
+  },
   "browserslist": {
     "production": [
       ">0.2%",
@@ -51,6 +54,7 @@
     "eslint-plugin-n": "^15.3.0",
     "eslint-plugin-promise": "^6.0.1",
     "eslint-plugin-react": "^7.31.8",
+    "lint-staged": "^13.0.3",
     "prettier": "2.7.1",
     "typescript": "^4.8.4"
   }
