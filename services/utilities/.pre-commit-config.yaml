@@ -1,0 +1,30 @@
+# top level options which apply to all hooks
+default_language_version:
+    python: python3.10
+exclude: ^frontend/
+
+# hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+    -   id: no-commit-to-branch
+        args: [--branch, main]
+    -   id: check-toml
+    -   id: end-of-file-fixer
+    -   id: trailing-whitespace
+-   repo: https://github.com/pycqa/isort
+    rev: 5.6.4
+    hooks:
+    -   id: isort
+        args: [--profile=black, --filter-files] # https://pycqa.github.io/isort/docs/configuration/black_compatibility.html
+-   repo: https://github.com/psf/black
+    rev: 22.10.0
+    hooks:
+    -   id: black
+        args: [./services, --line-length=88] # black seems to want to ignore top level exclude option.  Recurse in ./services folder only.
+-   repo: https://github.com/PyCQA/flake8
+    rev: 5.0.4
+    hooks:
+      - id: flake8
+        args: [--max-line-length=88, --extend-ignore=E203] # https://black.readthedocs.io/en/stable/guides/using_black_with_other_tools.html
