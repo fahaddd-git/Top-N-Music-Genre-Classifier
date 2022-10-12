@@ -1,4 +1,5 @@
-UTILS_DIR = ./services/utilities
+SERVICES_DIR := ./services
+UTILS_DIR = $(SERVICES_DIR)/utilities
 
 .PHONY: quality # runs pre-commit hooks for development purposes
 quality:
@@ -8,4 +9,4 @@ quality:
 
 .PHONY: install # runs install-services script
 install:
-	@cd $(UTILS_DIR) && ./install-services.sh && poetry run pre-commit install
+	@cd $(SERVICES_DIR) && ./install-services.sh && poetry run pre-commit install
