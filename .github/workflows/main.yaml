@@ -26,13 +26,11 @@ jobs:
           restore-keys: ${{ runner.os }}-pip
 
       - name: Install python code quality tools
-        run: python -m pip install black flake8 isort yamllint
-      - name: Run isort, black, & flake8
+        run: python -m pip install flake8 yamllint
+      - name: Run yamllint & flake8
         working-directory: ./services
         run: |
           yamllint . -d relaxed
-          isort .  --profile=black --filter-files
-          black . --line-length=88 -v
           flake8 . --max-line-length=88 --extend-ignore=E203
         continue-on-error: true
 
@@ -167,5 +165,5 @@ jobs:
 
       - name: Run eslint
         working-directory: frontend
-        run: npm lint
+        run: npm run ci
         continue-on-error: true
