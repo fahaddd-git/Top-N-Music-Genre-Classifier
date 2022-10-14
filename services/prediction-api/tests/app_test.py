@@ -1,8 +1,8 @@
 import unittest
+
 from fastapi.testclient import TestClient
 from prediction_api.app import app
 from prediction_api.mock_prediction import all_genres
-
 
 client = TestClient(app)
 
@@ -37,7 +37,4 @@ class Upload(unittest.TestCase):
         response = client.post("/uploadfiles", files=files)
 
         self.assertEqual(response.status_code, 200)
-        self.assertListEqual(
-            list(dict.keys(response.json())),
-            [f1, f2]
-        )
+        self.assertListEqual(list(dict.keys(response.json())), [f1, f2])
