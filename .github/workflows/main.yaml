@@ -127,6 +127,7 @@ jobs:
 
         # todo: add in coverage report
       - name: Run tests and generate report
+        working-directory: ./services
         run: |
           poetry run pytest --cov=${{matrix.services_to_test}} ./tests
 
