@@ -32,7 +32,6 @@ jobs:
         run: |
           yamllint . -d relaxed
           flake8 . --max-line-length=88 --extend-ignore=E203
-        continue-on-error: true
 
       #----------------------------------------------
       #       Detect Changes to Microservices and Frontend
@@ -125,7 +124,7 @@ jobs:
           export modified_dirname=$(echo ${{ matrix.services_to_test }} |  sed 's/-/_/g')
           echo "dirname=$modified_dirname" >> $GITHUB_ENV
 
-        # todo: add in coverage report
+        # todo: add in coverage report and thresholds
       - name: Run tests and generate report
         working-directory: ./services/${{matrix.services_to_test}}
         run: |
@@ -163,7 +162,7 @@ jobs:
         if: steps.cached-node-modules.outputs.cache-hit != 'true'
         run: npm install
 
-      - name: Run eslint
+      - name: Run npm lint script
         working-directory: frontend
-        run: npm run ci
+        run: npm run lint
         continue-on-error: true
