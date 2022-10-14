@@ -16,7 +16,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build && rsync -av --delete build/ ../services/prediction-api/static/",
     "lint": "eslint src --ext .ts,.tsx",
-    "test": "react-scripts test && run lint"
+    "test": "react-scripts test && run lint",
+    "ci": "echo ci"
   },
   "eslintConfig": {
     "extends": [
