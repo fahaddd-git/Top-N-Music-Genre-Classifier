@@ -32,7 +32,7 @@ jobs:
         run: |
           yamllint . -d relaxed
           isort .  --profile=black --filter-files
-          black . --line-length=88
+          black . --line-length=88 -v
           flake8 . --max-line-length=88 --extend-ignore=E203
         continue-on-error: true
 
@@ -127,7 +127,7 @@ jobs:
 
         # todo: add in coverage report
       - name: Run tests and generate report
-        working-directory: .services/${{matrix.services_to_test}}
+        working-directory: ./services/${{matrix.services_to_test}}
         run: |
           poetry run pytest --cov=${{matrix.services_to_test}} ./tests
 
