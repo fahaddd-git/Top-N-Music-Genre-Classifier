@@ -1,4 +1,3 @@
-
 """
 
 IANA is the official registry of MIME media types and maintains a list of all
@@ -14,8 +13,10 @@ https://developer.mozilla.org/en-US/docs/Web/HTTP/Basics_of_HTTP/MIME_types/Comm
 
 """
 
-content_type_audio = set((
-    "audio/mpeg",
-    "audio/oog",
-    "audio/wav",
-))
+content_type_audio = set(
+    (
+        "audio/mpeg",
+        "audio/oog",
+        "audio/wav",
+    )
+)
