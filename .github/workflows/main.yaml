@@ -126,6 +126,7 @@ jobs:
         run: |
           pwd
           poetry show -v
+          poetry add -D requests
 
         # todo: add in coverage report
       - name: Run tests and generate report
