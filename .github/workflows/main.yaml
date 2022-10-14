@@ -123,7 +123,9 @@ jobs:
 
       - name: Run tests in this dir
         working-directory: ./services/${{matrix.services_to_test}}
-        run: pwd
+        run: |
+          pwd
+          poetry show -v
 
         # todo: add in coverage report
       - name: Run tests and generate report
