@@ -132,7 +132,7 @@ jobs:
         id: modify-dirname
         run: |
           export modified_dirname=$(echo ${{ matrix.services_to_test }} |  sed 's/-/_/g')
-          echo ::set-output name=dirname::$modified_dirname
+          echo "dirname=$modified_dirname" >> $GITHUB_ENV
 
 
         # todo: add in coverage report
@@ -141,7 +141,7 @@ jobs:
 
         run: |
           echo ${{steps.modify-dirname.outputs.dirname}}
-          poetry run pytest --cov=${{steps.modify-dirname.outputs.dirname}} ./tests
+          poetry run pytest --cov=${{env.dirname}} ./tests
 
       #----------------------------------------------
       #       Run CI on frontend
