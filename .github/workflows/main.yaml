@@ -3,7 +3,7 @@ run-name: Lint and Test
 on:
   pull_request:
     branches:
-      - 'devops/ci'
+      - 'main'
 jobs:
       #----------------------------------------------
       #          install and run linters
