@@ -1,7 +1,7 @@
 name: CI Workflow
 run-name: Lint and Test
 on:
-  push:
+  pull_request:
     branches:
       - 'devops/ci'
 jobs:
@@ -49,8 +49,6 @@ jobs:
       frontend_changed_bool: ${{ steps.frontend_filter.outputs.frontend }}
 
     steps:
-      - name: get code
-        uses: actions/checkout@v3
 
       - name: Detect which/if any services changes
         uses: dorny/paths-filter@v2
