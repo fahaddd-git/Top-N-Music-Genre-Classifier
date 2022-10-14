@@ -128,11 +128,20 @@ jobs:
           poetry show -v
           poetry add -D requests
 
+      - name: Make modified dirname
+        id: modify-dirname
+        run: |
+          export modified_dirname=$(echo ${{ matrix.services_to_test }} |  sed 's/-/_/g')
+          echo ::set-output name=dirname::$modified_dirname
+
+
         # todo: add in coverage report
       - name: Run tests and generate report
         working-directory: ./services/${{matrix.services_to_test}}
+
         run: |
-          poetry run pytest --cov=${{matrix.services_to_test}} ./tests
+          echo ${{steps.modify-dirname.outputs.dirname}}
+          poetry run pytest --cov=${{steps.modify-dirname.outputs.dirname}} ./tests
 
       #----------------------------------------------
       #       Run CI on frontend
