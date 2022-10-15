@@ -34,7 +34,7 @@ jobs:
           black . --line-length=88 --check
           flake8 . --max-line-length=88 --extend-ignore=E203
       - name: Run yamllint
-        run: yamllint . -d relaxed
+        run: yamllint . -d relaxed --no-warnings
 
       #----------------------------------------------
       #       Detect Changes to Microservices and Frontend
