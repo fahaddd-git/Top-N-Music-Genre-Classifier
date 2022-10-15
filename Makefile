@@ -9,4 +9,5 @@ quality:
 
 .PHONY: install # runs install-services script
 install:
-	@cd $(SERVICES_DIR) && ./install-services.sh && poetry run pre-commit install
+	@cd $(SERVICES_DIR) && ./install-services.sh
+	@cd $(UTILS_DIR) && poetry run pre-commit install
