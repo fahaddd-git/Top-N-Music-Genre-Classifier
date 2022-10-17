@@ -30,9 +30,9 @@ jobs:
       - name: Run isort, black, & flake8
         working-directory: ./services
         run: |
-          isort .  --profile=black --filter-files
-          black . --line-length=88 --check
-          flake8 . --max-line-length=88 --extend-ignore=E203
+          isort .  --profile=black --filter-files --line-length=100
+          black . --line-length=100 --check
+          flake8 . --max-line-length=100 --extend-ignore=E203
       - name: Run yamllint
         run: yamllint . -d relaxed --no-warnings
 
