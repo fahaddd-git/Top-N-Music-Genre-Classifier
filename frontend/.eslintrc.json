@@ -32,11 +32,18 @@
     /* typescript rules */
     "@typescript-eslint/explicit-function-return-type": "off",
     "@typescript-eslint/semi": ["error", "always"],
+    "@typescript-eslint/comma-dangle": ["error", {
+      "arrays": "always-multiline",
+      "imports": "always-multiline",
+      "objects": "always-multiline"
+    }],
     "@typescript-eslint/triple-slash-reference": "off",  // affects d.ts global type declarations
+    "@typescript-eslint/no-unused-vars": "warn",
 
     /* javascript rules */
     "no-void": "error",
     "prefer-promise-reject-errors": "error",
+    "no-unused-vars": "warn",
 
     /* react rules */
     "react/no-unstable-nested-components": ["error", { "allowAsProps": true }],
@@ -48,7 +55,7 @@
     "no-extra-semi": "error",
     "comma-dangle": ["error", "only-multiline"],
     "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
-    "max-len": ["error", { "code": 120 }],
+    "max-len": ["error", { "code": 100 }],
     "linebreak-style": ["error", "unix"]
   }
 }
