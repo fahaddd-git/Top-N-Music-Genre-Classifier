@@ -2,8 +2,7 @@ from typing import Final
 
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-
-from .routers import predict_genre_router
+from prediction_api.routers.predict_genre import router as predict_genre_router
 
 app: Final = FastAPI(
     title="Top-N Music Genre Classifier",
