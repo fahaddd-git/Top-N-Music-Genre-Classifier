@@ -127,6 +127,11 @@ jobs:
           export modified_dirname=$(echo ${{ matrix.services_to_test }} |  sed 's/-/_/g')
           echo "dirname=$modified_dirname" >> $GITHUB_ENV
 
+      - name: Install sndfile dep for utilities Librosa
+        if: matrix.services_to_test == 'utilities'
+        run: |
+          sudo apt-get install libsndfile1-dev
+
         # todo: add in coverage report and thresholds
       - name: Run tests and generate report
         working-directory: ./services/${{matrix.services_to_test}}
