@@ -30,7 +30,7 @@ def test_stream_spectrogram(load_librosa_mel_spectrogram, load_stream_spectrogra
 
 def test_transform_spectrogram(load_stream_spectrogram):
     """Tests if min and max are [0-255]"""
-    assert np.any((load_stream_spectrogram >= 0) & (load_stream_spectrogram <= 255))
+    assert np.all((load_stream_spectrogram >= 0) & (load_stream_spectrogram <= 255))
 
 
 def test_convert_sound_to_image():
