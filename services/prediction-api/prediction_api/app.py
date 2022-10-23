@@ -8,11 +8,6 @@ app: Final = FastAPI(
     title="Top-N Music Genre Classifier",
     description="A web app that predicts an audio clip's genre based on a neural network model",
     version="0.1.0",
-    contact={
-        "url": "https://github.com/fahaddd-git/Top-N-Music-Genre-Classifier",
-    },
-    docs_url=None,
-    redoc_url="/docs",
 )
 
 app.add_middleware(
@@ -26,7 +21,7 @@ app.add_middleware(
 app.include_router(
     predict_genre_router,
     prefix="/api/predict-genres",
-    tags=["predict", "genre"],
+    tags=["predict-genre"],
 )
 
 
