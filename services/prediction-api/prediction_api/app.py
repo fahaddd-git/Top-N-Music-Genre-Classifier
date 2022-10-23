@@ -1,34 +1,30 @@
-from typing import List
+from typing import Final
 
-from fastapi import FastAPI, HTTPException, UploadFile, status
-from prediction_api.config import content_type_audio
-from prediction_api.mock_prediction import predict
+from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from prediction_api.routers.predict_genre import router as predict_genre_router
 
-app = FastAPI()
+app: Final = FastAPI(
+    title="Top-N Music Genre Classifier",
+    description="A web app that predicts an audio clip's genre based on a neural network model",
+    version="0.1.0",
+)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+app.include_router(
+    predict_genre_router,
+    prefix="/api/predict-genres",
+    tags=["predict-genre"],
+)
 
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
-
-
-async def _handle_audio_file(file: UploadFile) -> dict:
-    if file.content_type not in content_type_audio:
-        raise HTTPException(
-            status.HTTP_415_UNSUPPORTED_MEDIA_TYPE,
-            f"{file.filename}: {file.content_type} not in {content_type_audio}",
-        )
-    return predict(await file.read())
-
-
-@app.post("/uploadfile")
-async def upload_file(file: UploadFile):
-    return await _handle_audio_file(file)
-
-
-@app.post("/uploadfiles")
-async def upload_files(files: List[UploadFile]) -> dict:
-    predictions = {}
-    for file in files:
-        predictions[file.filename] = await _handle_audio_file(file)
-    return predictions
