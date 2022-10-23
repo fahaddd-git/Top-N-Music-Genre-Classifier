@@ -5,6 +5,10 @@ const MIN_AUDIO_LENGTH = 30;  // seconds
  * @return Promise that resolves to a 30-second clip of the passed audio file
  */
 export async function processAudioFile (audioFile: File): Promise<File> {
+  if (!audioFile.type.startsWith('audio')) {
+    return await Promise.reject(new Error('Not an audio file type'));
+  }
+
   return await new Promise((resolve, reject) => {
     const context = new AudioContext();
     const reader = new FileReader();
@@ -33,7 +37,6 @@ export async function processAudioFile (audioFile: File): Promise<File> {
 //   const ext = file.name.split('.').pop();
 //   switch (ext) {
 //     case "wav":
-//       return true;
 //     case "mp3":
 //       return true;
 //     default:
