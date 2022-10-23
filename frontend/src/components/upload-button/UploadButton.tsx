@@ -7,6 +7,7 @@ export const UploadButton = () => {
     const files = (event.target as HTMLInputElement).files;
     if (files != null && files.length > 0) {
       processAudioFile(files[0])
+        // TODO: call the backend api here with the processed file
         .then(file => console.log(file))
         .catch(err => console.error(err));
     }
