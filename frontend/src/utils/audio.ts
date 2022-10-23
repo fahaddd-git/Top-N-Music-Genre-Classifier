@@ -28,3 +28,15 @@ export async function processAudioFile (audioFile: File): Promise<File> {
     reader.readAsArrayBuffer(audioFile);
   });
 }
+
+// const validateFileType = (file: File): boolean => {
+//   const ext = file.name.split('.').pop();
+//   switch (ext) {
+//     case "wav":
+//       return true;
+//     case "mp3":
+//       return true;
+//     default:
+//       return false;
+//   }
+// };
