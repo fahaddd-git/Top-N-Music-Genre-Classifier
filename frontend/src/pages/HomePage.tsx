@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import {
   Container,
   Typography,
@@ -5,6 +6,8 @@ import {
 import { UploadButton } from '../components';
 
 export const HomePage = () => {
+  const [results, setResults] = useState({});
+
   return (
     <Container>
       <Container sx={{ my: 2 }}>
@@ -13,12 +16,20 @@ export const HomePage = () => {
         </Typography>
       </Container>
       <Container sx={{ mt: 2 }}>
-        <UploadButton />
+        <UploadButton setResults={setResults}/>
       </Container>
       <Container sx={{ mt: 2 }}>
-        <Typography>
-          Results to go here
-        </Typography>
+        {
+          Object.entries(results).map(([key, value]) => {
+            return (
+              <>
+                <span>{key}: </span>
+                <span>{value as number}</span>
+                <br/>
+              </>
+            );
+          })
+        }
       </Container>
     </Container>
   );
