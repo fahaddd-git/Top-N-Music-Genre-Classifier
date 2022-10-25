@@ -13,7 +13,7 @@ export const HomePage = () => {
   const [results, setResults] = useState<IResults>({});
 
   return (
-    <Container>
+    <Container style={ { textAlign: 'center' } }>
       <Container sx={{ my: 2 }}>
         <Typography>
           Upload an audio file of at least 30s in length to see the genre prediction
