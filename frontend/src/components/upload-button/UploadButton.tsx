@@ -8,7 +8,7 @@ export const UploadButton = ({ setResults }: any) => {
     if (files != null && files.length > 0) {
       processAudioFile(files[0])
         .then(async (file) => setResults(await uploadFile(file)))
-        .catch(err => console.error(err));
+        .catch(err => alert(err));
     }
   };
 
