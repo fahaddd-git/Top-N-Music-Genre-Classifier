@@ -13,6 +13,7 @@ SUPPORTED_AUDIO_CONTENT_SUBTYPES: Final = frozenset(
         "mpeg",
         "oog",
         "wav",
+        "x-wav",
     )
 )
 

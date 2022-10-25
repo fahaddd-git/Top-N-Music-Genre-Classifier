@@ -2,14 +2,13 @@ import { processAudioFile } from '../../utils/';
 import { Button } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
-export const UploadButton = () => {
+export const UploadButton = ({ setResults }: any) => {
   const onChange = (event: React.FormEvent) => {
     const files = (event.target as HTMLInputElement).files;
     if (files != null && files.length > 0) {
       processAudioFile(files[0])
-        // TODO: call the backend api here with the processed file
-        .then(file => console.log(file))
-        .catch(err => console.error(err));
+        .then(async (file) => setResults(await uploadFile(file)))
+        .catch(err => alert(err));
     }
   };
 
@@ -25,4 +24,14 @@ export const UploadButton = () => {
       />
     </Button>
   );
+};
+
+const uploadFile = async (file: File): Promise<object> => {
+  const data = new FormData();
+  data.append('file', file);
+  const response = await fetch('/api/predict-genres/', {
+    method: 'POST',
+    body: data,
+  });
+  return await response.json();
 };
