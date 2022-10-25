@@ -1,24 +1,36 @@
+import { useState } from 'react';
 import {
   Container,
   Typography,
 } from '@mui/material';
 import { UploadButton } from '../components';
 
+interface IResults {
+  [key: string]: number
+}
+
 export const HomePage = () => {
+  const [results, setResults] = useState<IResults>({});
+
   return (
-    <Container>
+    <Container style={ { textAlign: 'center' } }>
       <Container sx={{ my: 2 }}>
         <Typography>
-          Instructions to go here
+          Upload an audio file of at least 30s in length to see the genre prediction
+          results.
         </Typography>
       </Container>
       <Container sx={{ mt: 2 }}>
-        <UploadButton />
+        <UploadButton setResults={setResults}/>
       </Container>
       <Container sx={{ mt: 2 }}>
-        <Typography>
-          Results to go here
-        </Typography>
+        {
+          Object.keys(results).map((key, i) => {
+            return (
+              <div key={i}>{key}: {(100 * results[key]).toFixed(3)}%</div>
+            );
+          })
+        }
       </Container>
     </Container>
   );

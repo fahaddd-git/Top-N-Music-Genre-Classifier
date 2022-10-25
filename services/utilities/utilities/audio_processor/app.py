@@ -72,7 +72,6 @@ def spectrogram_to_image(spectrogram: np.ndarray) -> Image:
 
     rescaled = transform_spectrogram(spectrogram)
     image = Image.fromarray(rescaled, mode="L")
-    image.show()
     return image
 
 
