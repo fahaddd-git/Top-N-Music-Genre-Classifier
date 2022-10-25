@@ -1,4 +1,3 @@
-from pathlib import Path
 from typing import Optional
 
 import librosa
@@ -14,6 +13,13 @@ def stream_spectrogram(
     Converts an audio stream to a mel spectrogram by way of STFTs.
     An explanation of the reasoning behind this workflow can be found at
     https://dsp.stackexchange.com/questions/76637/do-mel-spectrograms-of-two-audios-have-linear-property
+
+    :param file_path: Path to audio file
+    :param n_fft: Length of the FFT window
+    :param hop_length: Number of samples between successive frames
+    :param frame_length: The number of samples per frame
+    :return: Power Mel Spectrogram constructed from audio file with n_mels=128
+
     """
 
     stream = librosa.stream(
@@ -44,6 +50,9 @@ def transform_spectrogram(spectrogram: np.ndarray) -> np.ndarray:
     """
     Applies standardization and contrast normalization to spectrogram.
     This is so that the spectrogram, a numpy array, can be cast as a greyscale image.
+
+    :param spectrogram: Spectrogram to be transformed
+    :return: Standardized and Contrast Normalized spectrogram.  All values between [0-255]
     """
     # standardize data https://en.wikipedia.org/wiki/Standard_score
     standardized = (spectrogram - spectrogram.mean()) / spectrogram.std()
@@ -54,23 +63,24 @@ def transform_spectrogram(spectrogram: np.ndarray) -> np.ndarray:
     return spec_scaled.astype(np.uint8)
 
 
-def save_spectrogram_to_image(
-    spectrogram: np.ndarray,
-    file_name: str,
-    output_file_path: str = "utilities/audio_processor/images",
-) -> Image:
-    """Saves spectrogram as .png file in greyscale"""
+def spectrogram_to_image(spectrogram: np.ndarray) -> Image:
+    """Spectrogram array as image in greyscale standardized and contrast normalized.
+
+    :param spectrogram: Spectrogram to be converted to image
+    :return: spectrogram as PIL Image
+    """
 
     rescaled = transform_spectrogram(spectrogram)
-    Path(output_file_path).mkdir(exist_ok=True)
-    image = Image.fromarray(rescaled)
-    image.save(f"{output_file_path}/{file_name}.png")
+    image = Image.fromarray(rescaled, mode="L")
     return image
 
 
 def log_spectrogram(mel_spectrogram: np.ndarray) -> np.ndarray:
-    """Returns log mel spectrogram.
+    """Log mel spectrogram from spectrogram.
     In a log mel spectrogram, amplitude is converted to decibels which follows a logarithmic scale.
+
+    :param mel_spectrogram: Mel spectrogram to be converted
+    :return: Log Mel Spectrogram
     """
     log_mel_spectrogram = librosa.power_to_db(mel_spectrogram, ref=np.max)
     return log_mel_spectrogram
@@ -78,12 +88,15 @@ def log_spectrogram(mel_spectrogram: np.ndarray) -> np.ndarray:
 
 def convert_sound_to_image(
     sound_file_path: str,
-    output_name_no_ext: Optional[None] = None,
     librosa_options: Optional[dict] = None,
 ) -> Image:
     """
      Interface for converting sound to image.
     Default librosa_options are: n_fft: int = 2048, hop_length: int = 2048, frame_length: int = 2048
+
+    :param sound_file_path: Path to audio file
+    :param librosa_options: Options used by Librosa for creating the spectrogram
+    :return: Log Mel Spectrogram as PIL Image
     """
     spectrogram = (
         stream_spectrogram(sound_file_path, **librosa_options)
@@ -91,6 +104,5 @@ def convert_sound_to_image(
         else stream_spectrogram(sound_file_path)
     )
     log_spec = log_spectrogram(spectrogram)
-    file_name = output_name_no_ext or Path(sound_file_path).stem
-    image = save_spectrogram_to_image(log_spec, file_name)
+    image = spectrogram_to_image(log_spec)
     return image
