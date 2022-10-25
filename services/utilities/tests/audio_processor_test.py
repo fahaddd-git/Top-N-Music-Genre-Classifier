@@ -1,5 +1,3 @@
-import os
-
 import librosa
 import numpy as np
 import pytest
@@ -34,11 +32,6 @@ def test_transform_spectrogram(load_stream_spectrogram):
 
 
 def test_convert_sound_to_image():
-    """Tests saving log spectrogram as image in default param path"""
+    """Tests converting log spectrogram to image"""
     result = app.convert_sound_to_image(TEST_FILE_PATH)
-    default_param_file_path = app.save_spectrogram_to_image.__defaults__[0]
-    file = f"{default_param_file_path}/classical.00000.png"
-    if not os.path.isfile(file):
-        assert False
-    os.remove(file)
     assert isinstance(result, Image.Image)
