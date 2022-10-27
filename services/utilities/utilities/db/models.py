@@ -10,7 +10,7 @@ class Genre(_BaseModel):
     Columns:
         - id (pk, integer)
         - name (text, unique)
-    .
+
     Relationships:
         - Spectrogram (on Genre.id == Spectrogram.genre_id)
     """
