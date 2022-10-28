@@ -29,9 +29,10 @@ for project in $failed; do
   echo "    poetry install failed for $project"
 done
 
-# initialize or upgrade db
+# initialize/upgrade db
 echo "* Running alembic migration..."
 pushd "utilities"
+mkdir -p resources
 poetry run alembic upgrade head
 if [ $? -ne 0 ]; then
   echo "Alembic failed to upgrade sqlite database"

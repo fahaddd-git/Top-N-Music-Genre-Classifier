@@ -24,7 +24,7 @@ def upgrade() -> None:
     op.create_table(
         "spectrograms",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("genre_id", sa.Integer, sa.ForeignKey("genres.id")),
+        sa.Column("genre_id", sa.Integer, sa.ForeignKey("genres.id"), nullable=False),
         sa.Column("image_data", sa.LargeBinary, nullable=False),
         sa.Column("last_modified", sa.DateTime, nullable=False),
     )
