@@ -16,8 +16,10 @@ fi
 declare -a failed=()
 for project in $project_directories; do
   pushd $project
+  echo "* Running poetry install in $project..."
   poetry install
   [ $? -ne 0 ] && failed+=($project)
+  repeat 2 echo
   popd
 done
 
@@ -26,3 +28,15 @@ done
 for project in $failed; do
   echo "    poetry install failed for $project"
 done
+
+# initialize/upgrade db
+echo "* Running alembic migration..."
+pushd "utilities"
+mkdir -p resources
+poetry run alembic upgrade head
+if [ $? -ne 0 ]; then
+  echo "Alembic failed to upgrade sqlite database"
+else
+  echo "Alembic upgrade successful"
+fi
+popd
