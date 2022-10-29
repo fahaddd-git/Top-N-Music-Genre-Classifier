@@ -16,11 +16,19 @@ def _get_genre_occurances() -> dict:
         for genre in genres:
             occurances[genre.id] = 0
 
-        for genres in genres:
-            genre_count = session.query(func.count(Spectrogram.genre_id)).scalar()
-            occurances[genres.id] = genre_count
+        # for genre in genres:
+        #     genre_count = session.query(
+        #         Spectrogram,
+        #         func.count(Spectrogram.genre_id)).group_by(Spectrogram.genre_id).scalar()
+        #     occurances[genre.id] = genre_count
 
-        return occurances
+        genre_count = (
+            session.query(Spectrogram.genre_id, func.count(Spectrogram.genre_id))
+            .group_by(Spectrogram.genre_id)
+            .all()
+        )
+
+        return genre_count
 
 
 def train_test_split(train_fraction=0.8) -> (list[Image], list[str], list[Image], list[str]):
@@ -83,4 +91,4 @@ def train_test_split(train_fraction=0.8) -> (list[Image], list[str], list[Image]
 
 if __name__ == "__main__":
     print(_get_genre_occurances())
-    print(train_test_split())
+    # print(train_test_split())
