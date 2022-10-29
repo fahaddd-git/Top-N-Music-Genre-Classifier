@@ -1,9 +1,9 @@
 import time
-
 from datetime import datetime
+from pathlib import Path
+
 from file_convertor import FileConvertor
 from gtzan_helper import GtzanHelper
-from pathlib import Path
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import SessionTransaction
@@ -23,7 +23,7 @@ file_converter = FileConvertor(gtzan)
 # log number of files processed to STDOUT
 spectrograms_processed = 0
 
-session: SessionTransaction
+session: SessionTransaction  # so I can get lsp autocompletion
 while True:
     with sqlite_session().begin() as session:
         for spectrogram in file_converter.convert_files():
@@ -38,11 +38,13 @@ while True:
                     select(Genre).filter_by(name=spectrogram.genre)
                 ).scalar_one()
 
-            session.add(Spectrogram(
-                image_data=spectrogram.image_stream,
-                genre_id=genre.id,
-                last_modified=datetime.now(),
-            ))
+            session.add(
+                Spectrogram(
+                    image_data=spectrogram.image_stream,
+                    genre_id=genre.id,
+                    last_modified=datetime.now(),
+                )
+            )
             print("Spectrogram processed", spectrograms_processed)
             spectrograms_processed += 1
 
