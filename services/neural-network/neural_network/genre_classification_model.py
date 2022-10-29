@@ -13,12 +13,6 @@ class GenreClassificationModel:
     def __init__(self, spectrogram_data: SpectrogramData, labels: dict):
         self.labels = labels
         self.spectrogram_data = spectrogram_data
-        self.train_input = (
-            np.concatenate([image_to_array(s) for s in self.spectrogram_data.train_data], axis=1),
-        )
-        self.test_input = (
-            np.concatenate([image_to_array(s) for s in self.spectrogram_data.test_data], axis=1),
-        )
         self.model = tf.keras.models.Sequential()
 
         self._add_preprocessing_layers()
@@ -56,8 +50,9 @@ class GenreClassificationModel:
 
     def _fit(self, epochs: int) -> None:
         history = self.model.fit(
-            self.train_input,
-            validation_data=self.test_input,
+            x=np.array([image_to_array(s) for s in self.spectrogram_data.train_data]),
+            y=np.array(self.spectrogram_data.train_labels) - 1,
+            # validation_data=self.test_input,
             epochs=epochs,
             callbacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2),
         )

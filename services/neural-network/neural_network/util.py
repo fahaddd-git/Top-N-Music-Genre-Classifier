@@ -9,7 +9,7 @@ from utilities.db.models import Genre
 
 def image_to_array(image: bytes) -> np.ndarray:
     image_buffer = io.BytesIO(image)
-    image = Image.open(image_buffer)
+    image = Image.open(image_buffer).convert("L").resize((150, 150))
     return np.array(image)
 
 
