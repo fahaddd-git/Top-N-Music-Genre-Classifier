@@ -1,13 +1,14 @@
+import time
+
+from datetime import datetime
+from file_convertor import FileConvertor
+from gtzan_helper import GtzanHelper
 from pathlib import Path
+from sqlalchemy import select
+from sqlalchemy.exc import NoResultFound
+from sqlalchemy.orm import SessionTransaction
 from utilities.db.connector import sqlite_session
 from utilities.db.models import Genre, Spectrogram
-from gtzan_helper import GtzanHelper
-from file_convertor import FileConvertor
-from sqlalchemy import select
-from sqlalchemy.orm import SessionTransaction
-from sqlalchemy.exc import NoResultFound
-from datetime import datetime
-import time
 
 # check the unprocessed directory for newly added files every 60 seconds
 num_seconds_to_sleep = 60
@@ -23,8 +24,8 @@ file_converter = FileConvertor(gtzan)
 spectrograms_processed = 0
 
 session: SessionTransaction
-with sqlite_session().begin() as session:
-    while True:
+while True:
+    with sqlite_session().begin() as session:
         for spectrogram in file_converter.convert_files():
             try:
                 genre = session.execute(
@@ -38,13 +39,13 @@ with sqlite_session().begin() as session:
                 ).scalar_one()
 
             session.add(Spectrogram(
-                image_data=bytes(spectrogram.image.tobytes()),
+                image_data=spectrogram.image_stream,
                 genre_id=genre.id,
                 last_modified=datetime.now(),
             ))
             print("Spectrogram processed", spectrograms_processed)
             spectrograms_processed += 1
 
-        # watch for any newly added unprocessed files
-        print("Sleeping for", num_seconds_to_sleep, "seconds")
-        time.sleep(num_seconds_to_sleep)
+    # watch for any newly added unprocessed files
+    print("Sleeping for", num_seconds_to_sleep, "seconds")
+    time.sleep(num_seconds_to_sleep)

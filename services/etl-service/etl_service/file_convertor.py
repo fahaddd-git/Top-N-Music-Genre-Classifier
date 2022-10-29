@@ -1,14 +1,15 @@
-from typing import Iterable
-from PIL.Image import Image
-from pathlib import Path
-from gtzan_helper import GtzanHelper
-from utilities.audio_processor import convert_sound_to_image
+import io
+
 from dataclasses import dataclass
+from gtzan_helper import GtzanHelper
+from pathlib import Path
+from typing import Iterable
+from utilities.audio_processor import convert_sound_to_image
 
 
 @dataclass
 class SpectrogramData:
-    image: Image
+    image_stream: bytes
     genre: str
 
 
@@ -39,8 +40,11 @@ class FileConvertor:
         processed images.
         """
         for file in self.gtzan_helper.get_files():
+            image_stream = io.BytesIO()
             image = convert_sound_to_image(file)
+            image.save(image_stream, format="png")
+
             file.rename(self.processed_dir / file.name)
             genre = self.gtzan_helper.get_genre(file)
-            spectrogram = SpectrogramData(image, genre)
+            spectrogram = SpectrogramData(image_stream.getvalue(), genre)
             yield spectrogram
