@@ -9,9 +9,17 @@ from sqlalchemy.exc import NoResultFound
 from datetime import datetime
 import time
 
+# check the unprocessed directory for newly added files every 60 seconds
 num_seconds_to_sleep = 60
+
+# path to the gtzan dataset of .wav files. This in theory should process any
+# example .wav file that is named in the same fashion as the gtzan dataset.
 gtzan = GtzanHelper(Path().home() / "gtzan")
+
+# processed files will end up in $HOME/gtzan/processed
 file_converter = FileConvertor(gtzan)
+
+# log number of files processed to STDOUT
 spectrograms_processed = 0
 
 session: SessionTransaction
@@ -37,5 +45,6 @@ with sqlite_session().begin() as session:
             print("Spectrogram processed", spectrograms_processed)
             spectrograms_processed += 1
 
+        # watch for any newly added unprocessed files
         print("Sleeping for", num_seconds_to_sleep, "seconds")
         time.sleep(num_seconds_to_sleep)
