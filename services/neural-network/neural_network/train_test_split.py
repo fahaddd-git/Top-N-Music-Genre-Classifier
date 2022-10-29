@@ -1,94 +1,78 @@
+from dataclasses import dataclass
 from math import ceil
 
-# import numpy as np
-from PIL.Image import Image
-from sqlalchemy import func  # , select
+from sqlalchemy import func
 from utilities.db.connector import sqlite_session
-from utilities.db.models import Genre, Spectrogram
+from utilities.db.models import Spectrogram
 
-# from typing import Iterable
+
+@dataclass
+class SpectrogramData:
+    train_data: list[bytes]
+    train_labels: list[int]
+    test_data: list[bytes]
+    test_labels: list[int]
 
 
 def _get_genre_occurances() -> dict:
-    occurances = {}
     with sqlite_session().begin() as session:
-        genres = session.query(Genre).all()
-        for genre in genres:
-            occurances[genre.id] = 0
-
-        # for genre in genres:
-        #     genre_count = session.query(
-        #         Spectrogram,
-        #         func.count(Spectrogram.genre_id)).group_by(Spectrogram.genre_id).scalar()
-        #     occurances[genre.id] = genre_count
-
         genre_count = (
-            session.query(Spectrogram.genre_id, func.count(Spectrogram.genre_id))
+            session.query(Spectrogram.genre_id, func.count(True))
             .group_by(Spectrogram.genre_id)
             .all()
         )
+        return dict(genre_count)
 
-        return genre_count
+
+def _get_examples(genre_id: int, n: int, skip: int) -> list[bytes]:
+    with sqlite_session().begin() as session:
+        results = (
+            session.query(Spectrogram.image_data)
+            .filter(Spectrogram.genre_id == genre_id)
+            .limit(n)
+            .offset(skip)
+            .all()
+        )
+    return results
 
 
-def train_test_split(train_fraction=0.8) -> (list[Image], list[str], list[Image], list[str]):
+def train_test_split(train_fraction=0.8) -> SpectrogramData:
+    """
+    Partitions the entire database into train and test fractions
+    and returns the corresponding SpectrogramData.
+    """
     if 1 <= train_fraction <= 0:
         raise Exception("Train fraction must be between 0 and 1")
-    # test_fraction = 1 - train_fraction
+
+    test_fraction = 1 - train_fraction
     genre_occurances = _get_genre_occurances()
 
-    train_results = []
-    test_results = []
-    with sqlite_session().begin() as session:
-        for genre_id, num_examples in genre_occurances.items():
-            num_train = ceil(num_examples * train_fraction)
-            # num_test = ceil(num_examples * test_fraction)
+    train_data = []
+    train_labels = []
+    test_data = []
+    test_labels = []
+    for genre_id, num_examples in genre_occurances.items():
+        num_train = ceil(num_examples * train_fraction)
+        num_test = ceil(num_examples * test_fraction)
 
-            train_results += (
-                session.query(Spectrogram)
-                .filter(Spectrogram.genre_id == genre_id)
-                .limit(num_train)
-                .all()
-            )
+        train_data_found = _get_examples(genre_id, num_train, 0)
+        test_data_found = _get_examples(genre_id, num_test, num_train)
 
-            # test_results.append(
-            #     session
-            #     .query(Spectrogram)
-            #     .filter(genre_id=genre_id)
-            #     .skip(num_train)
-            #     .limit(num_test)
-            #     .all()
-            # )
+        train_data += train_data_found
+        test_data += test_data_found
+        train_labels += [genre_id] * len(train_data_found)
+        test_labels += [genre_id] * len(test_data_found)
 
-        # # base_query = """
-        # # select g.name, s.image from genres g
-        # # inner join spectrograms s on g.id = s.genreID
-        # # where g.name like ?
-        # # """
-        # # train_query = base_query + f"limit {num_train}"
-        # # test_query = base_query + f"limit {num_test} offset {num_train}"
-
-        # train_data = cursor\
-        #     .execute(train_query, [f"%{genre_id}%"])\
-        #     .fetchall()
-        # test_data = cursor\
-        #     .execute(test_query, [f"%{genre_id}%"])\
-        #     .fetchall()
-
-        # train_results.append(train_data)
-        # test_results.append(test_data)
-
-    return train_results, test_results
-
-
-# def _flatten(lst: list):
-#     flattened_list = []
-#     for sub_list in lst:
-#         for item in sub_list:
-#             flattened_list.append(item)
-#     return flattened_list
+    return SpectrogramData(train_data, train_labels, test_data, test_labels)
 
 
 if __name__ == "__main__":
+    print(len(_get_examples(1, 12, 90)))
     print(_get_genre_occurances())
-    # print(train_test_split())
+    data = train_test_split(train_fraction=0.78)
+    print(len(data.train_data))
+    print(len(data.train_labels))
+    print(len(data.test_data))
+    print(len(data.test_labels))
+    print(data.train_labels)
+    print(data.test_labels)
