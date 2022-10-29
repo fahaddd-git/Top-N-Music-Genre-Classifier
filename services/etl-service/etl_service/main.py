@@ -7,24 +7,35 @@ from sqlalchemy import select
 from sqlalchemy.orm import SessionTransaction
 from sqlalchemy.exc import NoResultFound
 from datetime import datetime
+import time
 
+num_seconds_to_sleep = 60
 gtzan = GtzanHelper(Path().home() / "gtzan")
 file_converter = FileConvertor(gtzan)
+spectrograms_processed = 0
 
 session: SessionTransaction
 with sqlite_session().begin() as session:
-    for spectrogram in file_converter.convert_files():
-        try:
-            genre = session.execute(
-                select(Genre).filter_by(name=spectrogram.genre)).scalar_one()
-        except NoResultFound:
-            genre = Genre(name=spectrogram.genre)
-            session.add(genre)
-            genre = session.execute(
-                select(Genre).filter_by(name=spectrogram.genre)).scalar_one()
+    while True:
+        for spectrogram in file_converter.convert_files():
+            try:
+                genre = session.execute(
+                    select(Genre).filter_by(name=spectrogram.genre)
+                ).scalar_one()
+            except NoResultFound:
+                genre = Genre(name=spectrogram.genre)
+                session.add(genre)
+                genre = session.execute(
+                    select(Genre).filter_by(name=spectrogram.genre)
+                ).scalar_one()
 
-        session.add(Spectrogram(
-            image_data=bytes(spectrogram.image.tobytes()),
-            genre_id=genre.id,
-            last_modified=datetime.now(),
-        ))
+            session.add(Spectrogram(
+                image_data=bytes(spectrogram.image.tobytes()),
+                genre_id=genre.id,
+                last_modified=datetime.now(),
+            ))
+            print("Spectrogram processed", spectrograms_processed)
+            spectrograms_processed += 1
+
+        print("Sleeping for", num_seconds_to_sleep, "seconds")
+        time.sleep(num_seconds_to_sleep)
