@@ -3,7 +3,14 @@ from pathlib import Path
 
 
 class GtzanHelper:
+    """
+    Contains helper methods for working with the gtzan dataset.
+    """
+
     def __init__(self, gtzan_dataset_dir: Path):
+        """
+        :param gtzan_dataset_dir: Path to the directory full of wav files.
+        """
         if not gtzan_dataset_dir.exists():
             raise FileExistsError(gtzan_dataset_dir.absolute())
         self.gtzan_path = gtzan_dataset_dir
@@ -26,4 +33,7 @@ class GtzanHelper:
         return set(self.get_genre(f) for f in self.gtzan_path.glob("*.wav"))
 
     def get_files(self) -> Iterable[Path]:
+        """
+        Returns a listing of the paths to all the .wav files.
+        """
         return self.gtzan_path.glob("*.wav")
