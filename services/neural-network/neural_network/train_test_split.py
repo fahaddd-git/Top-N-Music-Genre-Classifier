@@ -33,7 +33,7 @@ def _get_examples(genre_id: int, n: int, skip: int) -> list[bytes]:
             .offset(skip)
             .all()
         )
-    return results
+    return [r.image_data for r in results]
 
 
 def train_test_split(train_fraction=0.8) -> SpectrogramData:

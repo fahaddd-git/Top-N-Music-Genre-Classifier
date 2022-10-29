@@ -12,6 +12,8 @@ packages = [{include = "neural_network"}]
 [tool.poetry.dependencies]
 python = "~3.10"
 utilities = {path = "../utilities"}
+tensorflow = "^2.10.0"
+numpy = "^1.23.4"
 
 
 [tool.poetry.group.dev.dependencies]
