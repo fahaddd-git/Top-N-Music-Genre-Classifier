@@ -132,6 +132,12 @@ jobs:
         run: |
           sudo apt-get install libsndfile1-dev
 
+      - name: Run alembic migrations
+        working-directory: ./services/utilities
+        run: |
+          pip install alembic
+          alembic upgrade head
+
         # todo: add in coverage report and thresholds
       - name: Run tests and generate report
         working-directory: ./services/${{matrix.services_to_test}}
