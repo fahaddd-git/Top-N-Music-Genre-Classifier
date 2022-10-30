@@ -1,3 +1,6 @@
+import io
+
+from PIL import Image, UnidentifiedImageError
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, LargeBinary, Text
 from sqlalchemy.orm import declarative_base, relationship
 
@@ -12,7 +15,7 @@ class Genre(_BaseModel):
         - name (text, unique)
 
     Relationships:
-        - Spectrogram (on Genre.id == Spectrogram.genre_id)
+        - spectrograms (on Genre.id == Spectrogram.genre_id)
     """
 
     __tablename__ = "genres"
@@ -33,7 +36,7 @@ class Spectrogram(_BaseModel):
         - last_modified (datetime)
 
     Relationships:
-        - Genre (on Spectrogram.genre_id == Genre.id)
+        - genre (on Spectrogram.genre_id == Genre.id)
     """
 
     __tablename__ = "spectrograms"
@@ -44,3 +47,18 @@ class Spectrogram(_BaseModel):
     last_modified = Column(DateTime, nullable=False)
 
     genre = relationship("Genre", back_populates="spectrograms")
+
+    @property
+    def image(self) -> Image:
+        """Spectrogram data as a PIL Image (None if data cannot be read as an image)"""
+        buffer = io.BytesIO(self.image_data)
+        try:
+            return Image.open(buffer).convert("L")
+        except UnidentifiedImageError:
+            pass  # todo: log error
+        return None
+
+    @property
+    def grayscale_image(self) -> Image:
+        """Spectrogram image coerced to grayscale (None if data cannot be read as an image)"""
+        return image.convert("L") if (image := self.image) else None
