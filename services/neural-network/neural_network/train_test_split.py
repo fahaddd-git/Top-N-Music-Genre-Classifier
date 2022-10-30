@@ -42,7 +42,7 @@ def train_test_split(train_fraction=0.8) -> SpectrogramData:
     and returns the corresponding SpectrogramData.
     """
     if 1 <= train_fraction <= 0:
-        raise Exception("Train fraction must be between 0 and 1")
+        raise ValueError("Train fraction must be between 0 and 1")
 
     test_fraction = 1 - train_fraction
     genre_occurances = _get_genre_occurances()
