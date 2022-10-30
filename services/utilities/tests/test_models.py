@@ -1,5 +1,6 @@
 import io
 from datetime import datetime
+from pathlib import Path
 from typing import Final
 from unittest.mock import patch
 
@@ -8,7 +9,7 @@ from PIL import Image, UnidentifiedImageError
 from utilities.db.models import Spectrogram
 
 MODULE_PATH: Final = "utilities.db.models"
-SAMPLE_IMAGE_PATH: Final = "./test_files/blues.00036.png"
+SAMPLE_IMAGE_PATH: Final = Path(__file__).resolve().parent / "test_files/blues.00036.png"
 
 
 @pytest.fixture(scope="session")
