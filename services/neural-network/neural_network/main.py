@@ -1,7 +1,7 @@
 import numpy as np
 from genre_classification_model import GenreClassificationModel
-from train_test_split import train_test_split
-from util import get_labels, image_to_array
+from neural_network.data_ingestion_helpers import train_test_split
+from neural_network.util import get_labels, image_to_array
 
 spectrogram_data = train_test_split()
 data = image_to_array(spectrogram_data.train_data[0])

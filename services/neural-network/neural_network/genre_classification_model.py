@@ -2,11 +2,11 @@ from pathlib import Path
 
 import numpy as np
 import tensorflow as tf
+from neural_network.data_ingestion_helpers import SpectrogramData
+from neural_network.util import image_to_array
 
 # from matplotlib import pyplot as plt
 from tensorflow.keras import layers
-from train_test_split import SpectrogramData
-from util import image_to_array
 
 
 class GenreClassificationModel:
