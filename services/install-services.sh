@@ -19,7 +19,6 @@ for project in $project_directories; do
   echo "* Running poetry install in $project..."
   poetry install
   [ $? -ne 0 ] && failed+=($project)
-  poetry update --only local
   repeat 2 echo
   popd
 done

@@ -16,7 +16,7 @@ def sqlite_session() -> sessionmaker:
         >>>     session.add(new_genre)
     """
     sqlite_path = os.environ.get(SQLITE_DB_PATH)
-    sqlite_url = f"sqlite:////{sqlite_path}"
+    sqlite_url = f"sqlite:///{sqlite_path}"
     engine = create_engine(sqlite_url)
     session = sessionmaker(bind=engine)
     return session
