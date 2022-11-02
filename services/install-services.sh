@@ -26,7 +26,7 @@ done
 # report failures
 [ ${#failed[@]} -ne 0 ] && echo "\n\nError installing dependencies:"
 for project in $failed; do
-  echo "    poetry install failed for $project"
+  echo "Warning: poetry install failed for $project"
 done
 
 # initialize/upgrade db
