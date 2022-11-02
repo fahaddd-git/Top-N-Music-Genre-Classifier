@@ -1,6 +1,7 @@
 from typing import Final
 
-from fastapi import FastAPI
+from config import global_settings
+from fastapi import FastAPI, staticfiles
 from fastapi.middleware.cors import CORSMiddleware
 from prediction_api.routers.predict_genre import router as predict_genre_router
 
@@ -25,6 +26,8 @@ app.include_router(
 )
 
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+# @app.get("/")
+# async def root():
+#     return {"message": "Hello World"}
+
+app.mount("/", staticfiles.StaticFiles(directory=global_settings.static_content_dir, html=True))
