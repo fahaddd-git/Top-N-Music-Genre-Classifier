@@ -19,6 +19,7 @@ for project in $project_directories; do
   echo "* Running poetry install in $project..."
   poetry install
   [ $? -ne 0 ] && failed+=($project)
+  poetry update --only local
   repeat 2 echo
   popd
 done
@@ -26,7 +27,7 @@ done
 # report failures
 [ ${#failed[@]} -ne 0 ] && echo "\n\nError installing dependencies:"
 for project in $failed; do
-  echo "    poetry install failed for $project"
+  echo "Warning: poetry install failed for $project"
 done
 
 # initialize/upgrade db
