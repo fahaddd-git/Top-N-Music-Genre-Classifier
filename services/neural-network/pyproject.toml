@@ -14,12 +14,13 @@ service = "neural_network.handler:handle"
 
 [tool.poetry.dependencies]
 python = "~3.10"
-utilities = {path = "../utilities"}
 tensorflow = "^2.10.0"
 numpy = "^1.23.4"
 sqlalchemy = "^1.4.42"
 tensorflow-datasets = "^4.7.0"
 
+[tool.poetry.group.local.dependencies]
+utilities = {path = "../utilities"}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.3"
