@@ -3,6 +3,8 @@ from pathlib import Path
 import tensorflow as tf
 from neural_network.data_ingestion_helpers import SpectrogramData
 
+DEBUG = False
+
 
 class GenreClassificationModel:
     def __init__(self, spectrogram_data: SpectrogramData):
@@ -19,15 +21,11 @@ class GenreClassificationModel:
         # ideally, this logic should be made dynamic, but for now we can resize to 100x250
         resize_to_dimension = (100, 250)
         self._model.add(
-            tf.keras.layers.Input(
-                shape=(*resize_to_dimension, 1)  # assume 1 channel grayscale images
-            )
-        )
-        self._model.add(
             tf.keras.layers.Resizing(
                 *resize_to_dimension,
                 interpolation="area",
-                # input_shape=(100, 250, 1)
+                input_shape=(*resize_to_dimension, 1),  # assume single-channel grayscale
+                name="ResizeImages",
             )
         )
 
@@ -39,14 +37,12 @@ class GenreClassificationModel:
         """Attach convolutional layers"""
         # Adapted from
         # https://www.tensorflow.org/tutorials/audio/simple_audio
-        #
         # self.model.add(layers.Conv2D(32, 3, activation='relu')),
         # self.model.add(layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.Dropout(0.25)),
-        # self._model.add(tf.keras.layers.Flatten()),
+        self._model.add(tf.keras.layers.Flatten()),
         self._model.add(tf.keras.layers.Dense(128, activation="relu")),
         self._model.add(tf.keras.layers.Dropout(0.5)),
-        # self._model.add(tf.keras.layers.Conv2D(64, 3, activation='relu')),
         self._model.add(tf.keras.layers.Dense(self._spectrogram_data.number_of_labels))
 
     def _compile(self) -> None:
@@ -57,19 +53,23 @@ class GenreClassificationModel:
         )
 
     def fit(self, epochs: int) -> None:
-        print("\nCreating model summary...", end="\n\n")
-        self._model.summary()
-        print("\nFitting...", end="\n\n")
-        x, y = self._spectrogram_data.train_dataset
+        if DEBUG:
+            print("\nCreating model summary...", end="\n\n")
+            try:
+                self._model.summary()
+            except ValueError:
+                pass
+            print("\nFitting...", end="\n\n")
+        self._model.build()
         history = self._model.fit(
-            x=x,
-            y=y,
+            *self._spectrogram_data.train_dataset,
             epochs=epochs,
             verbose=2
             # callbacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2),
         )
-        print("\nFitting done.")
-        print(history)
+        if DEBUG:
+            print("\nFitting done.")
+            print(history)
         return history
 
     def evaluate(self):

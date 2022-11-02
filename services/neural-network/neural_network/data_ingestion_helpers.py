@@ -2,6 +2,8 @@ from dataclasses import dataclass
 from math import ceil
 from typing import Annotated
 
+# from PIL.Image import NEAREST
+# import numpy as np
 import tensorflow as tf
 from numpy.typing import NDArray
 from sqlalchemy import func
@@ -31,12 +33,12 @@ class SpectrogramData:
     @property
     def train_dataset(self) -> tuple[RaggedTensor, Tensor]:
         """Training data as a tuple comprising a ragged tensor and corresponding label tensor"""
-        return tf.ragged.constant(self.train_data), tf.constant(self.train_labels)
+        return tf.ragged.stack(self.train_data), tf.constant(self.train_labels)
 
     @property
     def test_dataset(self) -> tuple[RaggedTensor, Tensor]:
         """Testing data as a tuple comprising a ragged tensor and corresponding label tensor"""
-        return tf.ragged.constant(self.test_data), tf.constant(self.test_labels)
+        return tf.ragged.stack(self.test_data), tf.constant(self.test_labels)
 
 
 def _get_genre_labels() -> dict[int, str]:
@@ -67,6 +69,11 @@ def _get_spectrogram_images(genre_id: int, limit: int, skip: int):
             .offset(skip)
             .all()
         )
+        # spectrogram_images = [
+        #     spectrogram.image.resize((100, 150), NEAREST)
+        #     for spectrogram in results
+        # ]
+        # spectrogram_images = [np.array(spectrogram) for spectrogram in spectrogram_images]
         spectrogram_images = [spectrogram.image_data for spectrogram in results]
         spectrogram_images = [tf.io.decode_image(x) for x in spectrogram_images]
     return spectrogram_images
