@@ -2,7 +2,6 @@ from dataclasses import dataclass
 from math import ceil
 from typing import Annotated
 
-import numpy as np
 import tensorflow as tf
 from numpy.typing import NDArray
 from sqlalchemy import func
@@ -58,7 +57,7 @@ def _get_genre_occurrences() -> dict[int, int]:
         return dict(genre_count)
 
 
-def _get_spectrogram_images(genre_id: int, limit: int, skip: int) -> list[NDArray]:
+def _get_spectrogram_images(genre_id: int, limit: int, skip: int):
     """Return a list of spectrogram images matching the passed filters"""
     with sqlite_session().begin() as session:
         results = (
@@ -68,7 +67,8 @@ def _get_spectrogram_images(genre_id: int, limit: int, skip: int) -> list[NDArra
             .offset(skip)
             .all()
         )
-        spectrogram_images = [np.array(spectrogram.image) for spectrogram in results]
+        spectrogram_images = [spectrogram.image_data for spectrogram in results]
+        spectrogram_images = [tf.io.decode_image(x) for x in spectrogram_images]
     return spectrogram_images
 
 
