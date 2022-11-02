@@ -1,28 +1,54 @@
 from dataclasses import dataclass
 from math import ceil
+from typing import Annotated
 
 import numpy as np
+import tensorflow as tf
 from numpy.typing import NDArray
 from sqlalchemy import func
+from tensorflow import RaggedTensor, Tensor
 from utilities.db.connector import sqlite_session
 from utilities.db.models import Genre, Spectrogram
 
+# type aliases
+SpectrogramDataType = Annotated[list[NDArray], "List of 2D NDArrays representing images"]
+SpectrogramLabelType = Annotated[list[int], "List of integer labels"]
+LabelMappingType = Annotated[dict[int, str], "Mapping of integer labels to descriptions"]
 
-@dataclass
+
+@dataclass(frozen=True, eq=False)
 class SpectrogramData:
-    train_data: list[NDArray]
-    train_labels: NDArray[int]
-    test_data: list[NDArray]
-    test_labels: NDArray[int]
+    train_data: SpectrogramDataType
+    train_labels: SpectrogramLabelType
+    test_data: SpectrogramDataType
+    test_labels: SpectrogramLabelType
+    label_mapping: LabelMappingType
+
+    @property
+    def number_of_labels(self) -> int:
+        """Total number of unique labels in the dataset"""
+        return len(self.label_mapping)
+
+    @property
+    def train_dataset(self) -> tuple[RaggedTensor, Tensor]:
+        """Training data as a tuple comprising a ragged tensor and corresponding label tensor"""
+        return tf.ragged.constant(self.train_data), tf.constant(self.train_labels)
+
+    @property
+    def test_dataset(self) -> tuple[RaggedTensor, Tensor]:
+        """Testing data as a tuple comprising a ragged tensor and corresponding label tensor"""
+        return tf.ragged.constant(self.test_data), tf.constant(self.test_labels)
 
 
-def get_labels() -> dict:
+def _get_genre_labels() -> dict[int, str]:
+    """Return a genre_id -> name mapping"""
     with sqlite_session().begin() as session:
         genres = session.query(Genre).all()
         return {g.id: g.name for g in genres}
 
 
-def _get_genre_occurrences() -> dict:
+def _get_genre_occurrences() -> dict[int, int]:
+    """Return a frequency map of Spectrogram genre_id -> count pairs"""
     with sqlite_session().begin() as session:
         genre_count = (
             session.query(Spectrogram.genre_id, func.count(True))
@@ -32,12 +58,13 @@ def _get_genre_occurrences() -> dict:
         return dict(genre_count)
 
 
-def _get_examples(genre_id: int, n: int, skip: int) -> list[NDArray]:
+def _get_spectrogram_images(genre_id: int, limit: int, skip: int) -> list[NDArray]:
+    """Return a list of spectrogram images matching the passed filters"""
     with sqlite_session().begin() as session:
         results = (
             session.query(Spectrogram)
             .filter(Spectrogram.genre_id == genre_id)
-            .limit(n)
+            .limit(limit)
             .offset(skip)
             .all()
         )
@@ -64,28 +91,13 @@ def train_test_split(train_fraction: float = 0.8) -> SpectrogramData:
         num_train = ceil(num_examples * train_fraction)
         num_test = ceil(num_examples * test_fraction)
 
-        train_data_found = _get_examples(genre_id, num_train, 0)
-        test_data_found = _get_examples(genre_id, num_test, num_train)
+        train_data_found = _get_spectrogram_images(genre_id, num_train, 0)
+        test_data_found = _get_spectrogram_images(genre_id, num_test, num_train)
 
         train_data += train_data_found
         test_data += test_data_found
         train_labels += [genre_id] * len(train_data_found)
         test_labels += [genre_id] * len(test_data_found)
 
-    # convert 1-indexed genre_id to 0-indexed labels
-    train_labels = np.array(train_labels) - 1
-    test_labels = np.array(test_labels) - 1
-
-    return SpectrogramData(train_data, train_labels, test_data, test_labels)
-
-
-# if __name__ == "__main__":
-#     print(len(_get_examples(1, 12, 90)))
-#     print(_get_genre_occurrences())
-#     data = train_test_split(train_fraction=0.78)
-#     print(len(data.train_data))
-#     print(len(data.train_labels))
-#     print(len(data.test_data))
-#     print(len(data.test_labels))
-#     print(data.train_labels)
-#     print(data.test_labels)
+    genre_labels = _get_genre_labels()
+    return SpectrogramData(train_data, train_labels, test_data, test_labels, genre_labels)

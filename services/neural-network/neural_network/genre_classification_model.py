@@ -5,25 +5,29 @@ from neural_network.data_ingestion_helpers import SpectrogramData
 
 
 class GenreClassificationModel:
-    def __init__(self, spectrogram_data: SpectrogramData, labels: dict):
-        self.labels = labels
+    def __init__(self, spectrogram_data: SpectrogramData):
         self._spectrogram_data = spectrogram_data
         self._model = tf.keras.models.Sequential()
-
         self._add_preprocessing_layers()
         self._add_normalization_layers()
         self._add_convolutional_layers()
         self._compile()
 
     def _add_preprocessing_layers(self) -> None:
-        pass
+        """Preprocess and attach input tensor"""
+        # Currently, most images are approx 128x323 to 128x326, for an aspect ratio of about 0.4;
+        # ideally, this logic should be made dynamic, but for now we can resize to 100x250
+        resize_to_dimension = (100, 250)
+        self._model.add(
+            tf.keras.layers.Resizing(*resize_to_dimension, interpolation="area", input_dim=2)
+        )
 
     def _add_normalization_layers(self) -> None:
+        """Attach normalization tensors"""
         pass
 
-    def _add_convolutional_layers(
-        self,
-    ) -> None:
+    def _add_convolutional_layers(self) -> None:
+        """Attach convolutional layers"""
         # Adapted from
         # https://www.tensorflow.org/tutorials/audio/simple_audio
         #
@@ -34,7 +38,7 @@ class GenreClassificationModel:
         self._model.add(tf.keras.layers.Flatten()),
         self._model.add(tf.keras.layers.Dense(128, activation="relu")),
         self._model.add(tf.keras.layers.Dropout(0.5)),
-        self._model.add(tf.keras.layers.Dense(len(self.labels)))
+        self._model.add(tf.keras.layers.Dense(self._spectrogram_data.number_of_labels))
 
     def _compile(self) -> None:
         self._model.compile(
@@ -43,17 +47,15 @@ class GenreClassificationModel:
             metrics=["accuracy"],
         )
 
-    def _fit(self, epochs: int) -> None:
+    def fit(self, epochs: int) -> None:
         history = self._model.fit(
-            x=self._spectrogram_data.train_data,
-            y=self._spectrogram_data.train_labels,
-            # validation_data=self.test_input,
+            *self._spectrogram_data.train_dataset,
             epochs=epochs,
             callbacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2),
         )
         return history
 
-    def _evaluate(self, epochs: int):
+    def evaluate(self):
         pass
 
     def save(self, file_path: Path) -> None:
