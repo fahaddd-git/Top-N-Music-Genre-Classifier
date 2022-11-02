@@ -43,7 +43,7 @@ def run_migrations_offline() -> None:
     script output.
 
     """
-    sqlite_path = Path.resolve(os.getenv(SQLITE_DB_PATH, "../resources/data.db"))
+    sqlite_path = Path(os.getenv(SQLITE_DB_PATH, "../resources/data.db")).resolve()
     url = f"sqlite:////{sqlite_path}"
     context.configure(
         url=url,
