@@ -3,10 +3,10 @@ from pathlib import Path
 import tensorflow as tf
 from neural_network.data_ingestion_helpers import SpectrogramData
 
-DEBUG = False
-
 
 class GenreClassificationModel:
+    """A genre classification neural network tensorflow model"""
+
     def __init__(self, spectrogram_data: SpectrogramData):
         self._spectrogram_data = spectrogram_data
         self._model = tf.keras.models.Sequential()
@@ -31,14 +31,14 @@ class GenreClassificationModel:
 
     def _add_normalization_layers(self) -> None:
         """Attach normalization tensors"""
-        pass
+        pass  # todo: normalize to be in 0..1 here; consider moving
 
     def _add_convolutional_layers(self) -> None:
         """Attach convolutional layers"""
-        # Adapted from
+        # Adapted from https://www.tensorflow.org/tutorials/audio/simple_audio
         # https://www.tensorflow.org/tutorials/audio/simple_audio
         # self.model.add(layers.Conv2D(32, 3, activation='relu')),
-        # self.model.add(layers.MaxPooling2D()),
+        # self._model.add(tf.keras.layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.Dropout(0.25)),
         self._model.add(tf.keras.layers.Flatten()),
         self._model.add(tf.keras.layers.Dense(128, activation="relu")),
@@ -53,24 +53,13 @@ class GenreClassificationModel:
         )
 
     def fit(self, epochs: int) -> None:
-        if DEBUG:
-            print("\nCreating model summary...", end="\n\n")
-            try:
-                self._model.summary()
-            except ValueError:
-                pass
-            print("\nFitting...", end="\n\n")
-        self._model.build()
-        history = self._model.fit(
+        self._model.fit(
             *self._spectrogram_data.train_dataset,
+            batch_size=16,
             epochs=epochs,
             verbose=2
             # callbacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2),
         )
-        if DEBUG:
-            print("\nFitting done.")
-            print(history)
-        return history
 
     def evaluate(self):
         pass

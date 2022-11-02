@@ -69,11 +69,6 @@ def _get_spectrogram_images(genre_id: int, limit: int, skip: int):
             .offset(skip)
             .all()
         )
-        # spectrogram_images = [
-        #     spectrogram.image.resize((100, 150), NEAREST)
-        #     for spectrogram in results
-        # ]
-        # spectrogram_images = [np.array(spectrogram) for spectrogram in spectrogram_images]
         spectrogram_images = [spectrogram.image_data for spectrogram in results]
         spectrogram_images = [tf.io.decode_image(x) for x in spectrogram_images]
     return spectrogram_images

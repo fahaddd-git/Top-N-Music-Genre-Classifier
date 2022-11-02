@@ -14,4 +14,4 @@ model = GenreClassificationModel(spectrogram_data)
 # model._model.build()
 # model._model.summary()
 
-model.fit(1)
+model.fit(10)
