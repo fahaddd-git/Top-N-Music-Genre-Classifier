@@ -100,4 +100,12 @@ def train_test_split(train_fraction: float = 0.8) -> SpectrogramData:
         test_labels += [genre_id] * len(test_data_found)
 
     genre_labels = _get_genre_labels()
+
+    # remap to 0-indexing; ultimately we should use something more generic to handle arbitrary
+    # or non-contiguous ids here but this is a temporary stop-gap to assist with getting other
+    # layers working
+    genre_labels = {key - 1: value for key, value in genre_labels.items()}
+    train_labels = [value - 1 for value in train_labels]
+    test_labels = [value - 1 for value in test_labels]
+
     return SpectrogramData(train_data, train_labels, test_data, test_labels, genre_labels)
