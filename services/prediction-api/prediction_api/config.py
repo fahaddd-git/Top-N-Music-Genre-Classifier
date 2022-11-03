@@ -17,7 +17,7 @@ class _Settings(BaseSettings):
     port: int = 8000
     static_content_dir: str = "./static"
     environment: ENVIRONMENT = Field(
-        ENVIRONMENT.DEVELOPMENT,
+        ENVIRONMENT.PRODUCTION,
         description="serves build files from the static_content_dir if environment is PRODUCTION",
     )
 
