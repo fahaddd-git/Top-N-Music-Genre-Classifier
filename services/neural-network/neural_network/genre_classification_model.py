@@ -53,9 +53,7 @@ class GenreClassificationModel:
         self._model.add(tf.keras.layers.Flatten()),
         self._model.add(tf.keras.layers.Dense(128, activation="relu")),
         self._model.add(tf.keras.layers.Dropout(0.5)),
-        self._model.add(
-            tf.keras.layers.Dense(self._spectrogram_data.number_of_labels, activation="softmax")
-        )
+        self._model.add(tf.keras.layers.Dense(self._spectrogram_data.number_of_labels))
 
     def _compile(self) -> None:
         self._model.compile(
