@@ -1,7 +1,9 @@
+from pathlib import Path
 from typing import Final
 
-from fastapi import FastAPI
+from fastapi import FastAPI, staticfiles
 from fastapi.middleware.cors import CORSMiddleware
+from prediction_api.config import ENVIRONMENT, get_settings
 from prediction_api.routers.predict_genre import router as predict_genre_router
 
 app: Final = FastAPI(
@@ -24,7 +26,11 @@ app.include_router(
     tags=["predict-genre"],
 )
 
+if get_settings().environment is ENVIRONMENT.PRODUCTION:
+    static_files_dir = (Path(__file__) / ".." / ".." / get_settings().static_content_dir).resolve()
+    app.mount("/", staticfiles.StaticFiles(directory=static_files_dir, html=True))
+else:
 
-@app.get("/")
-async def root():
-    return {"message": "Hello World"}
+    @app.get("/")
+    async def root():
+        return {"message": "Hello World"}
