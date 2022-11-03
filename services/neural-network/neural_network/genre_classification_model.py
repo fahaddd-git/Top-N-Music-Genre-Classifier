@@ -3,6 +3,7 @@ from pathlib import Path
 
 import tensorflow as tf
 from neural_network.data_ingestion_helpers import SpectrogramData
+from numpy.typing import NDArray
 
 
 class GenreClassificationModel:
@@ -54,7 +55,11 @@ class GenreClassificationModel:
         self._model.add(tf.keras.layers.Flatten()),
         self._model.add(tf.keras.layers.Dense(128, activation="relu")),
         self._model.add(tf.keras.layers.Dropout(0.5)),
-        self._model.add(tf.keras.layers.Dense(self._spectrogram_data.number_of_labels))
+        self._model.add(
+            tf.keras.layers.Dense(
+                self._spectrogram_data.number_of_labels, activation="softmax"  # coerce to 0..1
+            )
+        )
 
     def _compile(self) -> None:
         """Compile the model. Must be called after all layers have been attached."""
@@ -83,8 +88,9 @@ class GenreClassificationModel:
         )
         return metrics
 
-    def predict(self):
-        raise NotImplementedError
+    def predict(self, tensor: tf.RaggedTensor) -> NDArray:
+        """Predict from a **stack** RaggedTensor"""
+        return self._model.predict(tensor)
 
     def save(self, directory: str | PathLike) -> None:
         """Outputs the model in its current state to the specified output directory. If the path
