@@ -5,6 +5,11 @@ A music genre classifier
 
 ### Deployment Instructions
 
+
+### Making Contributions
+
+
+
 ### Project Structure
 #### Frontend
 Houses the web frontend.\

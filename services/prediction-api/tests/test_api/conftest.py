@@ -6,4 +6,5 @@ from prediction_api.app import app
 @pytest.fixture
 def client() -> TestClient:
     """Mock client"""
-    return TestClient(app)
+    with TestClient(app) as test_client:
+        yield test_client
