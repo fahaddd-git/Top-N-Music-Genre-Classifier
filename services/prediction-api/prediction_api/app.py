@@ -37,3 +37,8 @@ static_content_app = StaticFiles(
 )
 if Path(static_content_dir).is_dir():
     app.mount("/", app=static_content_app, name="static")
+else:
+
+    @app.get("/")
+    async def root():
+        return {"message": "Development mode. No static content directory detected."}
