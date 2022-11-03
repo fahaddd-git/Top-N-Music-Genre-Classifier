@@ -1,11 +1,9 @@
 import io
-from functools import cache
 from pathlib import Path
 from pprint import pprint
 
 import tensorflow as tf
 from keras.models import Sequential
-from neural_network.data_ingestion_helpers import _get_genre_labels
 from utilities.audio_processor import convert_sound_to_image
 
 """
@@ -41,8 +39,18 @@ def predict(model: Sequential, path: str):
 
 def to_genres(result_list: list[float]) -> dict[str, float]:
     """Temporary for demo"""
-    # cache so we only access database once, then immediately run the cached function
-    labels_to_str = cache(lambda: {key - 1: val for key, val in _get_genre_labels().items()})()
+    labels_to_str = {
+        0: "disco",
+        1: "country",
+        2: "rock",
+        3: "pop",
+        4: "jazz",
+        5: "metal",
+        6: "blues",
+        7: "reggae",
+        8: "classical",
+        9: "hiphop",
+    }
     return {labels_to_str.get(i): value for i, value in enumerate(result_list)}
 
 
