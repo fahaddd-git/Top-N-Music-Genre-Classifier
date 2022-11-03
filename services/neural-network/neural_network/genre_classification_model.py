@@ -1,3 +1,4 @@
+from os import PathLike
 from pathlib import Path
 
 import tensorflow as tf
@@ -56,6 +57,7 @@ class GenreClassificationModel:
         self._model.add(tf.keras.layers.Dense(self._spectrogram_data.number_of_labels))
 
     def _compile(self) -> None:
+        """Compile the model. Must be called after all layers have been attached."""
         self._model.compile(
             optimizer="adam",
             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
@@ -63,19 +65,31 @@ class GenreClassificationModel:
         )
 
     def fit(self, epochs: int) -> None:
+        """Fit the model based on the initial SpectrogramData"""
         self._model.fit(
             *self._spectrogram_data.train_dataset,
-            batch_size=16,
+            batch_size=32,
             epochs=epochs,
-            verbose=2
+            verbose="auto",
             # callbacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2),
         )
 
-    def evaluate(self):
-        pass
+    def evaluate(self) -> dict:
+        """Evaluate the model based on its initial SpectrogramData"""
+        metrics = self._model.evaluate(
+            *self._spectrogram_data.test_dataset,
+            verbose=2,
+            return_dict=True,
+        )
+        return metrics
 
-    def save(self, file_path: Path) -> None:
-        tf.keras.models.save_model(self._model, file_path)
+    def predict(self):
+        raise NotImplementedError
 
-    def load(self, file_path: Path) -> None:
-        pass
+    def save(self, directory: str | PathLike) -> None:
+        """Outputs the model in its current state to the specified output directory. If the path
+        does not already exist, it is created. Any existing files are overwritten.
+        """
+        path = Path(directory).resolve()
+        path.mkdir(parents=True, exist_ok=True)
+        tf.keras.models.save_model(self._model, path, overwrite=True)
