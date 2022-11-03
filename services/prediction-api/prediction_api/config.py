@@ -1,27 +1,16 @@
-from enum import Enum
 from functools import cache
 
 from pydantic import BaseSettings, Field
 
 
-class ENVIRONMENT(Enum):
-    """Defines the development environment"""
-
-    PRODUCTION = 0
-    DEVELOPMENT = 1
-
-
 class _Settings(BaseSettings):
     debug: bool = Field(False, description="Toggle file watcher to restart server on change")
-    host: str = Field("localhost", description="Host name")
+    host: str = "localhost"
     port: int = 8000
-    static_content_dir: str = "./static"
-    environment: ENVIRONMENT = Field(
-        ENVIRONMENT.PRODUCTION,
-        description="serves build files from the static_content_dir if environment is PRODUCTION",
-    )
+    static_content_dir: str = "static"
 
     class Config:
+        env_file = ".env"
         case_sensitive = False
 
 
