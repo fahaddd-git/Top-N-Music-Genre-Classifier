@@ -1,8 +1,11 @@
 import io
+from typing import TypeAlias
 
 from PIL import Image, UnidentifiedImageError
 from sqlalchemy import Column, DateTime, ForeignKey, Integer, LargeBinary, Text
 from sqlalchemy.orm import declarative_base, relationship
+
+PILImage: TypeAlias = Image.Image | None
 
 _BaseModel = declarative_base()
 
@@ -49,16 +52,16 @@ class Spectrogram(_BaseModel):
     genre = relationship("Genre", back_populates="spectrograms")
 
     @property
-    def image(self) -> Image:
+    def image(self) -> PILImage:
         """Spectrogram data as a PIL Image (None if data cannot be read as an image)"""
         buffer = io.BytesIO(self.image_data)
         try:
-            return Image.open(buffer).convert("L")
+            return Image.open(buffer)
         except UnidentifiedImageError:
             pass  # todo: log error
         return None
 
     @property
-    def grayscale_image(self) -> Image:
+    def grayscale_image(self) -> PILImage:
         """Spectrogram image coerced to grayscale (None if data cannot be read as an image)"""
         return image.convert("L") if (image := self.image) else None
