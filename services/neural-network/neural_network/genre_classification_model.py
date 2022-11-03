@@ -37,8 +37,18 @@ class GenreClassificationModel:
         """Attach convolutional layers"""
         # Adapted from https://www.tensorflow.org/tutorials/audio/simple_audio
         # https://www.tensorflow.org/tutorials/audio/simple_audio
-        # self.model.add(layers.Conv2D(32, 3, activation='relu')),
-        # self._model.add(tf.keras.layers.MaxPooling2D()),
+        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
+        self._model.add(tf.keras.layers.MaxPooling2D()),
+        self._model.add(tf.keras.layers.BatchNormalization())
+
+        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
+        self._model.add(tf.keras.layers.MaxPooling2D()),
+        self._model.add(tf.keras.layers.BatchNormalization()),
+
+        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
+        self._model.add(tf.keras.layers.MaxPooling2D()),
+        self._model.add(tf.keras.layers.BatchNormalization()),
+
         self._model.add(tf.keras.layers.Dropout(0.25)),
         self._model.add(tf.keras.layers.Flatten()),
         self._model.add(tf.keras.layers.Dense(128, activation="relu")),
