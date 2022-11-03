@@ -1,7 +1,7 @@
 import unittest
 
 import pytest
-from neural_network.train_test_split import train_test_split
+from neural_network.data_ingestion_helpers import train_test_split
 
 
 # This test will obviously fail if we modify our database
