@@ -9,6 +9,10 @@ authors = [
 ]
 packages = [{include = "neural_network"}]
 
+[tool.poetry.scripts]
+generate-model = "neural_network.main:main"
+evaluate = "evaluation_environment.main:main"
+
 [tool.poetry.dependencies]
 python = "~3.10"
 tensorflow = "^2.10.0"

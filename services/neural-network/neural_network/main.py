@@ -2,8 +2,8 @@ import io
 from pathlib import Path
 
 import tensorflow as tf
-from genre_classification_model import GenreClassificationModel
 from neural_network.data_ingestion_helpers import train_test_split
+from neural_network.genre_classification_model import GenreClassificationModel
 from utilities.audio_processor import convert_sound_to_image
 
 
@@ -21,10 +21,15 @@ def evaluate_and_save_model(model: GenreClassificationModel):
     print(f"Loss:\t{results.get('loss')}")
     print(f"Accuracy:\t{results.get('accuracy')}")
     print("")
-    should_save = input("Save model (y/n)? ").strip().lower()
+    should_save = (
+        input("Save model. This will overwrite any existing model (y/n)? ").strip().lower()
+    )
+    while should_save not in {"y", "n"}:
+        print("Please only enter 'y' or 'n'")
     if should_save == "y":
-        print("Saving to '~/model/'...")
-        model.save(Path.home() / "model")
+        print("Saving to '../evaluation_environment/model/'...")
+        path = Path(__file__).resolve().parents[1] / "evaluation_environment/model"
+        model.save(path)
         print("Success")
         print("")
 
@@ -51,15 +56,18 @@ def to_genres(result_list: list[float]) -> dict[str, float]:
     return {labels_to_str.get(i): value for i, value in enumerate(result_list)}
 
 
-if __name__ == "__main__":
+def main():
     while True:
-        num_epochs = 10
+        num_epochs = 20
         spectrogram_model = create_and_fit_model(num_epochs)
-        results = predict(spectrogram_model, "./clips/mozart.wav")
-        print("-----\nMozart:")
-        print(results, sep="\n")
-        print("-----")
         evaluate_and_save_model(spectrogram_model)
         try_again = input("Try again (y/n)? ").strip().lower()
+        while try_again not in {"y", "n"}:
+            print("Please only enter 'y' or 'n'")
+            try_again = input("Try again (y/n)? ").strip().lower()
         if try_again == "n":
             raise SystemExit
+
+
+if __name__ == "__main__":
+    main()
