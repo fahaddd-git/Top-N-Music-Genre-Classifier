@@ -15,6 +15,7 @@ python = "~3.10"
 fastapi = "^0.85.0"
 uvicorn = "^0.18.3"
 python-multipart = "^0.0.5"
+tensorflow-cpu = "^2.10.0"
 
 [tool.poetry.group.local.dependencies]
 utilities = {path = "../utilities"}
