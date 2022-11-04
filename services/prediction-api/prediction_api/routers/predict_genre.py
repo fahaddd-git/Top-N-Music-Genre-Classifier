@@ -90,7 +90,7 @@ def predict(filestream: bytes) -> dict:
     tensor = tf.ragged.stack([decoded_image])
     result = model.predict(tensor)[0]
     result = {labels_to_str.get(i): value for i, value in enumerate(result)}
-    return {labels_to_str.get(i): value for i, value in enumerate(result)}
+    return result
 
 
 @cache
