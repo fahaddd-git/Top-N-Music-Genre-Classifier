@@ -24,7 +24,9 @@ def evaluate_and_save_model(model: GenreClassificationModel):
     should_save = (
         input("Save model. This will overwrite any existing model (y/n)? ").strip().lower()
     )
-    while should_save not in {"y", "n"}:
+    while should_save := input(
+        "Save model. This will overwrite any existing model (y/n)? "
+    ).strip().lower() not in {"y", "n"}:
         print("Please only enter 'y' or 'n'")
     if should_save == "y":
         print("Saving to '../evaluation_environment/model/'...")
