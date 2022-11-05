@@ -35,7 +35,9 @@ def stream_spectrogram(
         all_blocks.append(curr_block)
     all_blocks = np.hstack(all_blocks)
 
+    # Adapted from:
     # https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html
+    # Date: 10/22/2022
     # convert stfts to mel spectrogram
     abs_value = np.abs(all_blocks) ** 2
     sr = librosa.get_samplerate(file_path)
@@ -58,7 +60,9 @@ def transform_spectrogram(spectrogram: np.ndarray) -> np.ndarray:
     standardized = (spectrogram - spectrogram.mean()) / spectrogram.std()
     standardized_min = standardized.min()
     # contrast normalization for greyscale image
+    # Adapted from:
     # https://stackoverflow.com/questions/70783357/how-do-i-normalize-the-pixel-value-of-an-image-to-01
+    # Date: 10/22/2022
     spec_scaled = (standardized - standardized_min) / (standardized.max() - standardized_min) * 255
     return spec_scaled.astype(np.uint8)
 
