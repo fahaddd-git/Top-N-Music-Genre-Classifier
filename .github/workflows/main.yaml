@@ -128,7 +128,7 @@ jobs:
           echo "dirname=$modified_dirname" >> $GITHUB_ENV
 
       - name: Install sndfile dep for utilities Librosa
-        if: matrix.services_to_test == 'utilities'
+        # if: matrix.services_to_test == 'utilities'
         run: |
           sudo apt-get install libsndfile1-dev
 
