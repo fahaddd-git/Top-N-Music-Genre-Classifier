@@ -48,7 +48,7 @@ def _get_genre_labels() -> dict[int, str]:
         return {g.id: g.name for g in genres}
 
 
-def _get_genre_occurrences() -> dict[int, int]:
+def get_genre_occurrences() -> dict[int, int]:
     """Return a frequency map of Spectrogram genre_id -> count pairs"""
     with sqlite_session().begin() as session:
         genre_count = (
@@ -83,7 +83,7 @@ def train_test_split(train_fraction: float = 0.8) -> SpectrogramData:
         raise ValueError("Train fraction must be between 0 and 1")
 
     test_fraction = 1.0 - train_fraction
-    genre_occurrences = _get_genre_occurrences()
+    genre_occurrences = get_genre_occurrences()
 
     train_data = []
     train_labels = []
