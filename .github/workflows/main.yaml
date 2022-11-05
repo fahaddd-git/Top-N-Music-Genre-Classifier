@@ -110,16 +110,17 @@ jobs:
       #     path: ~/.local
       #     key: localdir-${{ runner.os }}-${{ hashFiles('.github/workflows/main.yaml') }}
 
-      - name: Install/configure Poetry
-        uses: snok/install-poetry@v1.3.3
-        with:
-          virtualenvs-create: true
-          virtualenvs-in-project: true
+      # - name: Install/configure Poetry
+      #   uses: snok/install-poetry@v1.3.3
+      #   with:
+      #     virtualenvs-create: true
+      #     virtualenvs-in-project: true
 
       - name: Install project dependencies # if cache doesn't exist
-        working-directory: ./services/${{matrix.services_to_test}}
+        # working-directory: ./services/${{matrix.services_to_test}}
+        working-directory: ./services
         # if: steps.cached-poetry-dependencies.outputs.cache-hit != 'true'
-        run: poetry install
+        run: ./install-services.sh
 
       - name: Set modified dirname envvar # this is due to pycov needing the module name and not a folder
         id: modify-dirname
