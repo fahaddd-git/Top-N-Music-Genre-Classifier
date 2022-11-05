@@ -85,9 +85,10 @@ jobs:
       matrix:
         services_to_test: ${{ fromJSON(needs.detect_changes_job.outputs.services_changed_arr) }} # parse
     runs-on: ubuntu-latest
-    env:
-      SQLITE_DB_PATH: "${{GITHUB_WORKSPACE}}/services/utilities/resources/data.db"
     steps:
+      - name: "Set environmental variable because YAML sucks..."
+        run: |
+          echo "SQLITE_DB_PATH=$GITHUB_WORKSPACE/services/utilities/resources/data.db" >> $GITHUB_ENV
       - name: Check out repository
         uses: actions/checkout@v3
 
