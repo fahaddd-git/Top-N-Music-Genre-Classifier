@@ -15,9 +15,8 @@ evaluate = "evaluation_environment.main:main"
 
 [tool.poetry.dependencies]
 python = "~3.10"
-tensorflow = "^2.10.0"
+tensorflow-cpu = "^2.10.0"
 numpy = "^1.23.4"
-sqlalchemy = "^1.4.42"
 
 [tool.poetry.group.local.dependencies]
 utilities = {path = "../utilities"}
