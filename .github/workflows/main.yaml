@@ -116,6 +116,9 @@ jobs:
       #     virtualenvs-create: true
       #     virtualenvs-in-project: true
 
+      - name: Install zsh
+        run: sudo apt-get install zsh
+
       - name: Install project dependencies # if cache doesn't exist
         # working-directory: ./services/${{matrix.services_to_test}}
         working-directory: ./services
