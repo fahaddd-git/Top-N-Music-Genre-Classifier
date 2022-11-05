@@ -1,8 +1,15 @@
-from random import random
+import io
+import os
+import random
+import string
+from functools import cache
+from pathlib import Path
 from typing import Final
 
+import tensorflow as tf
 from fastapi import APIRouter, HTTPException, UploadFile, status
 from pydantic import BaseModel
+from utilities.audio_processor import convert_sound_to_image
 
 # IANA is the official registry of MIME media types.
 # See https://www.iana.org/assignments/media-types/media-types.xhtml and
@@ -55,16 +62,42 @@ def is_supported_audio_file(file: UploadFile) -> bool:
 
 
 def predict(filestream: bytes) -> dict:
-    all_genres = [
-        "blues",
-        "rap",
-        "rock",
-        "jazz",
-        "hiphop",
-        "hip hop",
-        "r&b",
-        "folk",
-        "alternative",
-    ]
-    result = {genre: random() for genre in all_genres if random() > 0.50}
+    model = load_model()
+    labels_to_str = {
+        0: "disco",
+        1: "country",
+        2: "rock",
+        3: "pop",
+        4: "jazz",
+        5: "metal",
+        6: "blues",
+        7: "reggae",
+        8: "classical",
+        9: "hiphop",
+    }
+    random_string = "".join(random.choices(population=string.ascii_letters, k=12))
+    temporary_file_path = f"./{random_string}.wav"
+    buffer = io.BytesIO(filestream)
+    with open(temporary_file_path, "wb") as outfile:
+        outfile.write(buffer.getvalue())
+    buffer.close()
+
+    image_buffer = io.BytesIO()
+    convert_sound_to_image(temporary_file_path).save(image_buffer, format="PNG")
+    os.remove(temporary_file_path)
+    image_bytes = image_buffer.getvalue()
+    decoded_image = tf.io.decode_image(image_bytes)
+    tensor = tf.ragged.stack([decoded_image])
+    result = model.predict(tensor)[0]
+    result = {labels_to_str.get(i): value for i, value in enumerate(result)}
     return result
+
+
+@cache
+def load_model():
+    """Loads model, assumes it's at ./model"""
+    model = tf.keras.models.load_model(
+        filepath=Path(__file__).resolve().parent / "model",
+        compile=True,
+    )
+    return model
