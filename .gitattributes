@@ -1,3 +1,7 @@
 * text=auto
+
 *.lock linguist-generated=true
-frontend/package-lock.json linguist-generated=true
+*-lock.json linguist-generated=true
+*.pb binary lingust-generated=true
+variables.index binary linguist-generated=true
+variables.data-* binary linguist-generated=true
