@@ -86,7 +86,7 @@ jobs:
         services_to_test: ${{ fromJSON(needs.detect_changes_job.outputs.services_changed_arr) }} # parse
     runs-on: ubuntu-latest
     env:
-      SQLITE_DB_PATH: "${{ env.GITHUB_WORKSPACE }}/services/utilities/resources/data.db"
+      SQLITE_DB_PATH: "${{GITHUB_WORKSPACE}}/services/utilities/resources/data.db"
     steps:
       - name: Check out repository
         uses: actions/checkout@v3
