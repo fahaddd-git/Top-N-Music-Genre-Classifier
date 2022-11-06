@@ -18,7 +18,8 @@ def sqlite_session() -> sessionmaker:
         >>>     new_genre = Genre(name="classical")
         >>>     session.add(new_genre)
     """
-    if sqlite_path := os.environ.get(SQLITE_DB_PATH) is None:
+    sqlite_path = os.environ.get(SQLITE_DB_PATH)
+    if sqlite_path is None:
         sqlite_path = (Path(__file__).parent.parent.parent / "resources/data.db").absolute()
     sqlite_url = f"sqlite:///{sqlite_path}"
     engine = create_engine(sqlite_url)
