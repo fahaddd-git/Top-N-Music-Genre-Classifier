@@ -1,13 +1,15 @@
+import { PredictGenresClient } from '../../clients';
 import { processAudioFile } from '../../utils/';
 import { Button } from '@mui/material';
 import FileUploadIcon from '@mui/icons-material/FileUpload';
 
 export const UploadButton = ({ setResults }: any) => {
   const onChange = (event: React.FormEvent) => {
+    const predictGenresClient = new PredictGenresClient();
     const files = (event.target as HTMLInputElement).files;
     if (files != null && files.length > 0) {
       processAudioFile(files[0])
-        .then(async (file) => setResults(await uploadFile(file)))
+        .then(async (file) => setResults(await predictGenresClient.fetchPredictions(file)))
         .catch(err => alert(err));
     }
   };
@@ -24,14 +26,4 @@ export const UploadButton = ({ setResults }: any) => {
       />
     </Button>
   );
-};
-
-const uploadFile = async (file: File): Promise<object> => {
-  const data = new FormData();
-  data.append('file', file);
-  const response = await fetch('/api/predict-genres/', {
-    method: 'POST',
-    body: data,
-  });
-  return await response.json();
 };

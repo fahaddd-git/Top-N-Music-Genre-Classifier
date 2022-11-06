@@ -6,7 +6,7 @@ import {
 import { UploadButton } from '../components';
 
 interface IResults {
-  [key: string]: number
+  [key: string]: number;
 }
 
 export const HomePage = () => {

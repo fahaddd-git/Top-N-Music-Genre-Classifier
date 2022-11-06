@@ -39,6 +39,13 @@
     }],
     "@typescript-eslint/triple-slash-reference": "off",  // affects d.ts global type declarations
     "@typescript-eslint/no-unused-vars": "warn",
+    "@typescript-eslint/consistent-type-definitions": "off",  // allow mixing interface and type
+    "@typescript-eslint/member-delimiter-style": ["error", {
+      "multiline": {
+        "delimiter": "semi",
+        "requireLast": true
+      }
+    }],
 
     /* javascript rules */
     "no-void": "error",
