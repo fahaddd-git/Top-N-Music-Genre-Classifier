@@ -1,5 +1,6 @@
 import os
 from functools import cache
+from pathlib import Path
 
 from sqlalchemy.engine import create_engine
 from sqlalchemy.orm import sessionmaker
@@ -18,6 +19,8 @@ def sqlite_session() -> sessionmaker:
         >>>     session.add(new_genre)
     """
     sqlite_path = os.environ.get(SQLITE_DB_PATH)
+    if sqlite_path is None:
+        sqlite_path = (Path(__file__).parent.parent.parent / "resources/data.db").absolute()
     sqlite_url = f"sqlite:///{sqlite_path}"
     engine = create_engine(sqlite_url)
     session = sessionmaker(bind=engine)
