@@ -77,6 +77,8 @@ jobs:
       # https://github.com/snok/install-poetry/blob/main/README.md
       # https://github.com/marketplace/actions/install-poetry-action#testing-using-a-matrix
       # https://www.peterbe.com/plog/install-python-poetry-github-actions-faster
+      # https://stackoverflow.com/questions/60491837/saving-cache-on-job-failure-in-github-actions
+      # https://github.com/mxxk/gh-actions-cache-always/blob/main/.github/workflows/cache-always.yml
       #----------------------------------------------
   run_ci_on_service:
     needs: detect_changes_job # detect_changes_job result
@@ -95,9 +97,20 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Create copy of actions/checkout
+        uses: actions/checkout@v3
+        with:
+          repository: actions/cache
+          ref: v3
+          path: .tmp/actions_cache
+
+      - name: Edit actions/cache manifest to always save
+        run: |
+          sed -i 's/success/always/' .tmp/actions_cache/action.yml
+
       - name: Load cached venv
         id: cached-poetry-dependencies
-        uses: actions/cache@v3
+        uses: ./.tmp/actions_cache
         env:
           LOCKFILE_LOCATION: "**/${{matrix.services_to_test}}/poetry.lock" # workaround for using variable in the hashFiles function below
         with:
@@ -105,7 +118,7 @@ jobs:
           key: venv-${{ runner.os }}-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles(env.LOCKFILE_LOCATION) }}
 
       - name: Load cached .local
-        uses: actions/cache@v3
+        uses: ./.tmp/actions_cache
         with:
           path: ~/.local
           key: localdir-${{ runner.os }}-${{ hashFiles('.github/workflows/main.yaml') }}
@@ -137,6 +150,11 @@ jobs:
         working-directory: ./services/${{matrix.services_to_test}}
         run: |
           poetry run pytest --cov=${{env.dirname}} ./tests
+
+      - name: failure
+        run: |
+          exit 1
+
 
       #----------------------------------------------
       #       Run CI on frontend
