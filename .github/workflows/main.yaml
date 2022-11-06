@@ -139,6 +139,7 @@ jobs:
       - name: Run tests and generate report
         working-directory: ./services/${{matrix.services_to_test}}
         run: |
+          pwd
           echo "$SQLITE_DB_PATH"
           poetry run pytest --cov=${{env.dirname}} ./tests
 
