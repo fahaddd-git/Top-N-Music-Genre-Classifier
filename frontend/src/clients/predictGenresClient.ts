@@ -1,10 +1,10 @@
 import {
-  isFastAPIClientErrorResponse,
-  isFastAPIValidationErrorResponse,
+  isPredictionAPIClientErrorResponse,
+  isPredictionAPIValidationErrorResponse,
 } from './types';
 
 /** Genre-number pairs. Numbers are decimals representing percent confidence. */
-export type PredictGenresResult = { [key: string]: number };
+export type PredictGenresResult = Record<string, number>;
 export type PredictGenresError = Error;
 
 export class PredictGenresClient {
@@ -20,8 +20,8 @@ export class PredictGenresClient {
   private async standardizeErrorMessage (response: Response): Promise<string> {
     try {
       const errorResponse = await response.json();
-      if (isFastAPIValidationErrorResponse(errorResponse)) return errorResponse.detail[0].msg;
-      if (isFastAPIClientErrorResponse(errorResponse)) return errorResponse.detail;
+      if (isPredictionAPIValidationErrorResponse(errorResponse)) return errorResponse.detail[0].msg;
+      if (isPredictionAPIClientErrorResponse(errorResponse)) return errorResponse.detail;
     } catch {
       try {
         // FastAPI returns text on 500s (https://fastapi.tiangolo.com/tutorial/handling-errors)

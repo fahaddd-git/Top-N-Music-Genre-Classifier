@@ -1,2 +1,3 @@
-export * from './app-layout';
-export * from './prediction-panel';
+export * from './AppLayout';
+export * from './PredictionPanel';
+export * from './UploadButton';

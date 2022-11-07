@@ -1,5 +1,5 @@
-export type FastAPIValidationErrorResponse = { detail: ValidationErrorDetail[] };
-export type FastAPIClientErrorResponse = { detail: string };
+export type PredictionAPIValidationErrorResponse = { detail: ValidationErrorDetail[] };
+export type PredictionAPIClientErrorResponse = { detail: string };
 
 type ValidationErrorDetail = {
   loc: string[];
@@ -7,14 +7,14 @@ type ValidationErrorDetail = {
   type: string;
 };
 
-export function isFastAPIValidationErrorResponse (
+export function isPredictionAPIValidationErrorResponse (
   object: any
-): object is FastAPIValidationErrorResponse {
+): object is PredictionAPIValidationErrorResponse {
   return Array.isArray(object?.detail) && object?.detail?.msg !== undefined;
 }
 
-export function isFastAPIClientErrorResponse (
+export function isPredictionAPIClientErrorResponse (
   object: any
-): object is FastAPIClientErrorResponse {
+): object is PredictionAPIClientErrorResponse {
   return typeof (object?.detail) === 'string';
 }
