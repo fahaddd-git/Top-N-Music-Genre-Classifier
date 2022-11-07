@@ -47,11 +47,16 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
+      contents: read
     outputs:
       services_changed_arr: ${{steps.services_filter.outputs.changes}} # arr of libs (services) changed
       frontend_changed_bool: ${{ steps.frontend_filter.outputs.frontend }}
 
     steps:
+      - name: checkout repo if push
+        if: ${{ github.event_name }} == "push"
+        uses: actions/checkout@v3
+
       - name: Detect which/if any services changes
         uses: dorny/paths-filter@v2
         id: services_filter
