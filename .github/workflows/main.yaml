@@ -47,6 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       pull-requests: read
+      contents: read
     outputs:
       services_changed_arr: ${{steps.services_filter.outputs.changes}} # arr of libs (services) changed
       frontend_changed_bool: ${{ steps.frontend_filter.outputs.frontend }}
