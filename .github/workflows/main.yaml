@@ -92,6 +92,9 @@ jobs:
         services_to_test: ${{ fromJSON(needs.detect_changes_job.outputs.services_changed_arr) }} # parse
     runs-on: ubuntu-latest
     steps:
+      - name: "Set environmental variable because YAML sucks..."
+        run: |
+          echo "SQLITE_DB_PATH=$GITHUB_WORKSPACE/services/utilities/resources/data.db" >> $GITHUB_ENV
       - name: Check out repository
         uses: actions/checkout@v3
 
@@ -153,6 +156,7 @@ jobs:
       - name: Run tests and generate report
         working-directory: ./services/${{matrix.services_to_test}}
         run: |
+          echo "SQLITE_DB_PATH: $SQLITE_DB_PATH"
           poetry run pytest --cov=${{env.dirname}} ./tests
 
       #----------------------------------------------

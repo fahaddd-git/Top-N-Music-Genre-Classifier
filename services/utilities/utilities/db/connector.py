@@ -8,7 +8,9 @@ from utilities.db.constants import SQLITE_DB_PATH
 
 @cache
 def sqlite_session() -> sessionmaker:
-    """Managed sqlite session context manager. Automatically commits and closes session on exit.
+    """
+    Managed sqlite session context manager. Automatically commits and closes
+    session on exit.
     Usage:
 
         >>>  with sqlite_session().begin() as session:
