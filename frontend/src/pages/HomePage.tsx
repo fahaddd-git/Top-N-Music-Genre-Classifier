@@ -1,17 +1,10 @@
-import { useState } from 'react';
 import {
   Container,
   Typography,
 } from '@mui/material';
-import { UploadButton } from '../components';
-
-interface IResults {
-  [key: string]: number;
-}
+import { PredictionPanel } from 'src/components';
 
 export const HomePage = () => {
-  const [results, setResults] = useState<IResults>({});
-
   return (
     <Container style={ { textAlign: 'center' } }>
       <Container sx={{ my: 2 }}>
@@ -20,18 +13,7 @@ export const HomePage = () => {
           results.
         </Typography>
       </Container>
-      <Container sx={{ mt: 2 }}>
-        <UploadButton setResults={setResults}/>
-      </Container>
-      <Container sx={{ mt: 2 }}>
-        {
-          Object.keys(results).map((key, i) => {
-            return (
-              <div key={i}>{key}: {(100 * results[key]).toFixed(3)}%</div>
-            );
-          })
-        }
-      </Container>
+      <PredictionPanel />
     </Container>
   );
 };
