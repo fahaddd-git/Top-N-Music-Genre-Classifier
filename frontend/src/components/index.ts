@@ -1,3 +1,3 @@
-export * from './app-layout';
-// export * from './results-container';
-export * from './upload-button';
+export * from './AppLayout';
+export * from './PredictionPanel';
+export * from './UploadButton';

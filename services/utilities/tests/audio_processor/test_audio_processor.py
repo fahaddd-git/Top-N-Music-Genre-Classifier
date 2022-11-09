@@ -4,12 +4,10 @@ import pytest
 from PIL import Image
 from utilities.audio_processor import app
 
-TEST_FILE_PATH = "tests/test_files/classical.00000.wav"
-
 
 @pytest.fixture
-def load_librosa_mel_spectrogram():
-    signal, sr = librosa.load(TEST_FILE_PATH, sr=22050, duration=30)
+def load_librosa_mel_spectrogram(sample_wav_path):
+    signal, sr = librosa.load(sample_wav_path, sr=22050, duration=30)
     librosa_mel = librosa.feature.melspectrogram(
         y=signal, sr=sr, n_fft=2048, hop_length=2048, center=False
     )
@@ -17,8 +15,8 @@ def load_librosa_mel_spectrogram():
 
 
 @pytest.fixture
-def load_stream_spectrogram():
-    return app.stream_spectrogram(TEST_FILE_PATH)
+def load_stream_spectrogram(sample_wav_path):
+    return app.stream_spectrogram(sample_wav_path)
 
 
 def test_stream_spectrogram(load_librosa_mel_spectrogram, load_stream_spectrogram):
@@ -32,7 +30,7 @@ def test_transform_spectrogram(load_stream_spectrogram):
     assert np.all((load_stream_spectrogram >= 0) & (load_stream_spectrogram <= 255))
 
 
-def test_convert_sound_to_image():
+def test_convert_sound_to_image(sample_wav_path):
     """Tests converting log spectrogram to image"""
-    result = app.convert_sound_to_image(TEST_FILE_PATH)
+    result = app.convert_sound_to_image(sample_wav_path)
     assert isinstance(result, Image.Image)

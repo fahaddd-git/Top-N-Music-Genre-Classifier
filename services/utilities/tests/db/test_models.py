@@ -1,6 +1,5 @@
 import io
 from datetime import datetime
-from pathlib import Path
 from typing import Final
 from unittest.mock import patch
 
@@ -9,13 +8,12 @@ from PIL import Image, UnidentifiedImageError
 from utilities.db.models import Spectrogram
 
 MODULE_PATH: Final = "utilities.db.models"
-SAMPLE_IMAGE_PATH: Final = Path(__file__).resolve().parent / "test_files/blues.00036.png"
 
 
 @pytest.fixture(scope="session")
-def spectrogram_with_image() -> tuple[Spectrogram, Image.Image]:
+def spectrogram_with_image(sample_image_path) -> tuple[Spectrogram, Image.Image]:
     buffer = io.BytesIO()
-    with open(SAMPLE_IMAGE_PATH, "rb") as png_image:
+    with open(sample_image_path, "rb") as png_image:
         buffer.write(png_image.read())
     spectrogram = Spectrogram(
         id=1, genre_id=1, image_data=buffer.getvalue(), last_modified=datetime.now()
