@@ -35,7 +35,7 @@ def stream_spectrogram(
         duration=30,  # forces shapes to be same
     )
     sr = librosa.get_samplerate(file_path)
-    resample_flag = sr == target_sr
+    resample_flag = sr != target_sr
     all_blocks = []
     for block in stream:
         # resample if needed
