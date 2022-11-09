@@ -7,7 +7,7 @@ from utilities.audio_processor import app
 
 @pytest.fixture
 def load_librosa_mel_spectrogram(sample_wav_path):
-    signal, sr = librosa.load(sample_wav_path, sr=22050)
+    signal, sr = librosa.load(sample_wav_path, sr=22050, duration=30)
     librosa_mel = librosa.feature.melspectrogram(
         y=signal, sr=sr, n_fft=2048, hop_length=2048, center=False
     )
@@ -21,6 +21,7 @@ def load_stream_spectrogram(sample_wav_path):
 
 def test_stream_spectrogram(load_librosa_mel_spectrogram, load_stream_spectrogram):
     """Tests if librosa.load generated mel spectrogram matches streamed mel spectrogram"""
+    assert load_librosa_mel_spectrogram.shape == load_stream_spectrogram.shape
     assert np.array_equiv(load_librosa_mel_spectrogram, load_stream_spectrogram)
 
 

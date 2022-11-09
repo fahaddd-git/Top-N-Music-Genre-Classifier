@@ -1,13 +1,16 @@
 from typing import Optional
 
 import librosa
-import librosa.display
 import numpy as np
 from PIL import Image
 
 
 def stream_spectrogram(
-    file_path: str, n_fft: int = 2048, hop_length: int = 2048, frame_length: int = 2048
+    file_path: str,
+    n_fft: int = 2048,
+    hop_length: int = 2048,
+    frame_length: int = 2048,
+    target_sr: int = 22050,
 ) -> np.ndarray:
     """
     Converts an audio stream to a mel spectrogram by way of STFTs.
@@ -18,6 +21,7 @@ def stream_spectrogram(
     :param n_fft: Length of the FFT window
     :param hop_length: Number of samples between successive frames
     :param frame_length: The number of samples per frame
+    :param target_sr: Sample rate to achieve for resampling audio files. GTZAN is at 22050hz.
     :return: Power Mel Spectrogram constructed from audio file with n_mels=128
 
     """
@@ -27,12 +31,19 @@ def stream_spectrogram(
         block_length=256,  # buffer size
         frame_length=frame_length,
         hop_length=hop_length,
+        mono=True,
+        duration=30,  # forces shapes to be same
     )
+    sr = librosa.get_samplerate(file_path)
+    resample_flag = sr == target_sr
     all_blocks = []
     for block in stream:
-        curr_block = librosa.stft(y=block, n_fft=n_fft, hop_length=2048, center=False)
-
+        # resample if needed
+        if resample_flag:
+            block = librosa.resample(block, orig_sr=sr, target_sr=target_sr)
+        curr_block = librosa.stft(y=block, n_fft=n_fft, hop_length=hop_length, center=False)
         all_blocks.append(curr_block)
+
     all_blocks = np.hstack(all_blocks)
 
     # Adapted from:
@@ -40,9 +51,12 @@ def stream_spectrogram(
     # Date: 10/22/2022
     # convert stfts to mel spectrogram
     abs_value = np.abs(all_blocks) ** 2
-    sr = librosa.get_samplerate(file_path)
     mel_spectro = librosa.feature.melspectrogram(
-        S=abs_value, sr=sr, hop_length=2048, center=False, n_mels=128
+        S=abs_value,
+        sr=22050,
+        hop_length=hop_length,
+        center=False,
+        n_mels=128,
     )
 
     return mel_spectro
