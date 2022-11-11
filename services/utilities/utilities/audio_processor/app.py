@@ -1,4 +1,4 @@
-from typing import Generator, Optional
+from typing import Iterable, Optional
 
 import librosa
 import numpy as np
@@ -7,7 +7,7 @@ from PIL import Image
 
 def spectrogram_generator(
     file_path: str, desired_segments_seconds: int = 5, sample_rate: int = 22050
-) -> Generator(np.ndarray):
+) -> Iterable[np.ndarray]:
     """
     Converts an audio stream to a mel spectrogram.
 
@@ -84,7 +84,7 @@ def log_spectrogram(mel_spectrogram: np.ndarray) -> np.ndarray:
 def convert_sound_to_image(
     sound_file_path: str,
     librosa_options: Optional[dict] = None,
-) -> Generator(Image):
+) -> Iterable[Image.Image]:
     """
      Interface for converting sound to image.
     Default librosa_options are: desired_segments_seconds: int = 5, sample_rate: int = 22050
