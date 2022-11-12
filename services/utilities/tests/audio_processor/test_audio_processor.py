@@ -39,12 +39,25 @@ def test_transform_spectrogram(load_spectrogram_generator):
         assert np.all((transformed >= 0) & (transformed <= 255))
 
 
-def test_convert_sound_to_image(sample_wav_path, desired_duration):
-    """Tests converting log spectrogram to image"""
+def test_generate_sound_images(sample_wav_path, desired_duration):
+    """Tests converting sound file to multiple images"""
     librosa_options = {"desired_segments_seconds": desired_duration}
-    images = app.convert_sound_to_image(sample_wav_path, librosa_options)
+    images = app.generate_sound_images(sample_wav_path, librosa_options)
     counter = 0
     for image in images:
         assert isinstance(image, Image.Image)
         counter += 1
     assert int(30 / desired_duration) == counter
+
+
+def test_convert_sound_to_image(sample_wav_path):
+    """Tests converting sound file to one image."""
+    image = app.convert_sound_to_image(sample_wav_path)
+    assert isinstance(image, Image.Image)
+
+
+def test_exception(sample_wav_path):
+    """Tests the correct interface is used."""
+    with pytest.raises(RuntimeError):
+        librosa_options = {"desired_segments_seconds": 13, "duration": 15}
+        app.convert_sound_to_image(sample_wav_path, librosa_options)

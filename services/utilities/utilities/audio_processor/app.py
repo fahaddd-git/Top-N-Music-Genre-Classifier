@@ -6,7 +6,7 @@ from PIL import Image
 
 
 def spectrogram_generator(
-    file_path: str, desired_segments_seconds: int = 5, sample_rate: int = 22050
+    file_path: str, desired_segments_seconds: int = 5, sample_rate: int = 22050, duration: int = 90
 ) -> Iterable[np.ndarray]:
     """
     Converts an audio stream to a mel spectrogram.
@@ -14,20 +14,18 @@ def spectrogram_generator(
     :param file_path: Path to audio file
     :param desired_segments_seconds: Seconds of audio to slice when creating the mel spectrogram.
         Equal segments of this param value are made as the duration of the audio file allows.
+    :param duration: how long of audio file to load. Less is loaded if clip length < duration
     :return: Power Mel Spectrogram constructed from audio file with n_mels=128
 
     """
 
-    audio_data, sr = librosa.load(
-        file_path, sr=sample_rate, mono=True, duration=90
-    )  # less is loaded if clip<duration but set 90 to max
+    audio_data, sr = librosa.load(file_path, sr=sample_rate, mono=True, duration=duration)
     clip_duration = librosa.get_duration(y=audio_data, sr=sr)
     # available slices of desired_segments_seconds
     possible_segments = int(clip_duration / desired_segments_seconds)
 
     total_sample_length = sample_rate * possible_segments
     samples_per_segment = int((total_sample_length / possible_segments) * desired_segments_seconds)
-
     for segment_number in range(possible_segments):
         start = samples_per_segment * segment_number
         end = start + samples_per_segment
@@ -84,14 +82,44 @@ def log_spectrogram(mel_spectrogram: np.ndarray) -> np.ndarray:
 def convert_sound_to_image(
     sound_file_path: str,
     librosa_options: Optional[dict] = None,
-) -> Iterable[Image.Image]:
+) -> Image.Image:
     """
-     Interface for converting sound to image.
-    Default librosa_options are: desired_segments_seconds: int = 5, sample_rate: int = 22050
+     Interface for converting sound to single image.
+    Default librosa_options are:
+        desired_segments_seconds: int = 5, sample_rate: int = 22050, duration: int = 30
 
     :param sound_file_path: Path to audio file
     :param librosa_options: Options used by Librosa for creating the spectrogram
     :return: Log Mel Spectrogram as PIL Image instance
+    """
+    default_options = {"desired_segments_seconds": 30, "duration": 30}
+    if librosa_options and (
+        librosa_options["desired_segments_seconds"] != librosa_options["duration"]
+    ):
+        raise RuntimeError
+    spectrogram_gen = (
+        spectrogram_generator(sound_file_path, **librosa_options)
+        if librosa_options
+        else spectrogram_generator(sound_file_path, **default_options)
+    )
+    spec = next(spectrogram_gen)
+
+    log_spec = log_spectrogram(spec)
+    image = spectrogram_to_image(log_spec)
+    return image
+
+
+def generate_sound_images(
+    sound_file_path: str, librosa_options: Optional[dict] = None
+) -> Iterable[Image.Image]:
+    """
+     Interface for converting sound to multiple images.
+    Default librosa_options are:
+        desired_segments_seconds: int = 5, sample_rate: int = 22050, duration: int = 90
+
+    :param sound_file_path: Path to audio file
+    :param librosa_options: Options used by Librosa for creating the spectrogram
+    :return: Generator of Log Mel Spectrograms as PIL Image instances
     """
     spectrogram_gen = (
         spectrogram_generator(sound_file_path, **librosa_options)
