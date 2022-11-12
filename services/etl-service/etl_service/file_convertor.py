@@ -2,8 +2,8 @@ import io
 from pathlib import Path
 from typing import Iterable
 
+from data_set_helper import DataSetHelper
 from etl_service.contracts.spectrogram import Spectrogram
-from gtzan_helper import DataSetHelper
 from utilities.audio_processor import convert_sound_to_image
 
 
@@ -20,7 +20,7 @@ class FileConvertor:
         they are processed.
         """
         if processed_dir is None:
-            processed_dir = data_set_helper.gtzan_path / "processed"
+            processed_dir = data_set_helper.data_set_path / "processed"
             processed_dir.mkdir(exist_ok=True)
         elif not processed_dir.exists():
             processed_dir.mkdir()

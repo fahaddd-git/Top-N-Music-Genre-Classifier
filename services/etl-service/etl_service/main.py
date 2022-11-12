@@ -2,8 +2,8 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+from data_set_helper import DataSetHelper
 from file_convertor import FileConvertor
-from gtzan_helper import DataSetHelper
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import SessionTransaction
