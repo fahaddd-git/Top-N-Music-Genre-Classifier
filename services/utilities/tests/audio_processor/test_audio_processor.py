@@ -1,8 +1,13 @@
+from typing import Final
+from unittest.mock import patch
+
 import librosa
 import numpy as np
 import pytest
 from PIL import Image
 from utilities.audio_processor import app
+
+MODULE_PATH: Final = "utilities.audio_processor.app"
 
 
 @pytest.fixture(params=range(5, 9))
@@ -42,7 +47,7 @@ def test_transform_spectrogram(load_spectrogram_generator):
 def test_generate_sound_images(sample_wav_path, desired_duration):
     """Tests converting sound file to multiple images"""
     librosa_options = {"desired_segments_seconds": desired_duration}
-    images = app.generate_sound_images(sample_wav_path, librosa_options)
+    images = app.generate_sound_images(sample_wav_path, **librosa_options)
     counter = 0
     for image in images:
         assert isinstance(image, Image.Image)
@@ -56,8 +61,14 @@ def test_convert_sound_to_image(sample_wav_path):
     assert isinstance(image, Image.Image)
 
 
-def test_exception(sample_wav_path):
-    """Tests the correct interface is used."""
-    with pytest.raises(RuntimeError):
-        librosa_options = {"desired_segments_seconds": 13, "duration": 15}
-        app.convert_sound_to_image(sample_wav_path, librosa_options)
+@patch(f"{MODULE_PATH}.spectrogram_generator")
+def test_duration_and_segments_seconds_not_passed(patched_spectrogram_generator, sample_wav_path):
+    librosa_options_overwritten_in_function = ("duration", "desired_segments_seconds")
+    expected_value = 20
+
+    with patch(f"{MODULE_PATH}.spectrogram_to_image"), patch(f"{MODULE_PATH}.log_spectrogram"):
+        app.convert_sound_to_image(sample_wav_path, duration=20, desired_segments_seconds=13)
+        assert all(
+            patched_spectrogram_generator.call_args.kwargs[key] == expected_value
+            for key in librosa_options_overwritten_in_function
+        )
