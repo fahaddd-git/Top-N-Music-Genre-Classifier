@@ -70,11 +70,11 @@ def test_get_genres_unknown_files_skipped(
 ):
     for name in [*files_happy_path, *files_unknown_extensions]:
         (tmp_path / name).touch()
-
     data_set_helper = DataSetHelper(tmp_path)
 
-    genres = data_set_helper.get_genres()
-    assert genres == genres
+    actual_genres = data_set_helper.get_genres()
+
+    assert genres == actual_genres
 
 
 def test_get_files_expected_file_names(tmp_path, files_happy_path):
