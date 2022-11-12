@@ -1,6 +1,8 @@
 from pathlib import Path
 from typing import Iterable
 
+from etl_service.contracts.exceptions import IncorrectFilename
+
 
 class DataSetHelper:
     """
@@ -20,9 +22,14 @@ class DataSetHelper:
         """
         Returns the genre from the filename of an audio file from the gtzan
         dataset. Note the genre is the first part of the file name
-        (e.g. "classical.00062.wav")
+        (e.g. "classical.00062.wav").
+
         :param gtzan_file_name: Path to an audio file from the gtzan dataset.
+        :raises IncorrectFilename: If the file is not named correctly.
         """
+        if file_name.name.count(".") != 2 or not file_name.name.endswith(".wav"):
+            raise IncorrectFilename(f"{file_name} not named correctly (i.e. classical.00062.wav)")
+
         return file_name.name.split(".", 1)[0]
 
     def get_genres(self) -> set:
@@ -30,7 +37,13 @@ class DataSetHelper:
         :param gtzan_path: Path to the directory of GTZAN dataset of wav files
         :return: The set of all the genre names from the data set.
         """
-        return set(self.get_genre(f) for f in self.data_set_path.glob("*.wav"))
+        genres = []
+        for file in self.data_set_path.glob("*.wav"):
+            try:
+                genres.append(self.get_genre(file))
+            except IncorrectFilename:
+                continue
+        return set(genres)
 
     def get_files(self) -> Iterable[Path]:
         """
