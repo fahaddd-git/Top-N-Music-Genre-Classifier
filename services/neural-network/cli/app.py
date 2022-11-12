@@ -58,16 +58,5 @@ def generate_model(
             raise typer.Exit()
 
 
-def to_genres(result_list: list[float]) -> dict[str, float]:
-    """Temporary for demo"""
-    from functools import cache
-
-    from neural_network.data_ingestion_helpers import _get_genre_labels
-
-    # cache so we only access database once, then immediately run the cached function
-    labels_to_str = cache(lambda: {key - 1: val for key, val in _get_genre_labels().items()})()
-    return {labels_to_str.get(i): value for i, value in enumerate(result_list)}
-
-
 if __name__ == "__main__":
     typer.run(generate_model)
