@@ -3,7 +3,7 @@ from datetime import datetime
 from pathlib import Path
 
 from file_convertor import FileConvertor
-from gtzan_helper import GtzanHelper
+from gtzan_helper import DataSetHelper
 from sqlalchemy import select
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.orm import SessionTransaction
@@ -15,7 +15,7 @@ num_seconds_to_sleep = 60
 
 # path to the gtzan dataset of .wav files. This in theory should process any
 # example .wav file that is named in the same fashion as the gtzan dataset.
-gtzan = GtzanHelper(Path().home() / "gtzan")
+gtzan = DataSetHelper(Path().home() / "gtzan")
 
 # processed files will end up in $HOME/gtzan/processed
 file_converter = FileConvertor(gtzan)
