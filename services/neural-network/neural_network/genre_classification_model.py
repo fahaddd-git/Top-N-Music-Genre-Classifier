@@ -27,18 +27,19 @@ class GenreClassificationModel:
                 *resize_to_dimension,
                 interpolation="area",
                 input_shape=(*resize_to_dimension, 1),  # assume single-channel grayscale
-                name="ResizeImages",
             )
         )
 
     def _add_normalization_layers(self) -> None:
         """Attach normalization tensors"""
-        pass  # todo: normalize to be in 0..1 here; consider moving
+        pass
 
     def _add_convolutional_layers(self) -> None:
         """Attach convolutional layers"""
-        # Adapted from https://www.tensorflow.org/tutorials/audio/simple_audio
-        # https://www.tensorflow.org/tutorials/audio/simple_audio
+        # Adapted from the following sources:
+        #   https://www.tensorflow.org/tutorials/audio/simple_audio
+        #   https://www.tensorflow.org/tutorials/images/data_augmentation#train_a_model
+        # Date: 11/3/2022
         self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
         self._model.add(tf.keras.layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.BatchNormalization())
@@ -57,7 +58,9 @@ class GenreClassificationModel:
         self._model.add(tf.keras.layers.Dropout(0.5)),
         self._model.add(
             tf.keras.layers.Dense(
-                self._spectrogram_data.number_of_labels, activation="softmax"  # coerce to 0..1
+                self._spectrogram_data.number_of_labels,
+                activation="softmax",  # coerce to 0..1
+                name="softmax_output_layer",
             )
         )
 
@@ -65,7 +68,7 @@ class GenreClassificationModel:
         """Compile the model. Must be called after all layers have been attached."""
         self._model.compile(
             optimizer="adam",
-            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True),
+            loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
             metrics=["accuracy"],  # track fraction correctly identified
         )
 
@@ -89,7 +92,7 @@ class GenreClassificationModel:
         return metrics
 
     def predict(self, tensor: tf.RaggedTensor) -> NDArray:
-        """Predict from a **stack** RaggedTensor"""
+        """Predict from a **stack** RaggedTensor representing single-channel grayscale images"""
         return self._model.predict(tensor)
 
     def save(self, directory: str | PathLike) -> None:

@@ -10,13 +10,16 @@ authors = [
 packages = [{include = "neural_network"}]
 
 [tool.poetry.scripts]
-generate-model = "neural_network.main:main"
+generate-model = "cli.main:main"
 evaluate = "evaluation_environment.main:main"
 
 [tool.poetry.dependencies]
 python = "~3.10"
 tensorflow-cpu = "^2.10.0"
 numpy = "^1.23.4"
+typer = "^0.7.0"
+rich = "^12.6.0"
+tensorflow = "^2.10.0"
 
 [tool.poetry.group.local.dependencies]
 utilities = {path = "../utilities"}

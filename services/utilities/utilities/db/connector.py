@@ -17,6 +17,9 @@ def sqlite_session() -> sessionmaker:
         >>>  with sqlite_session().begin() as session:
         >>>     new_genre = Genre(name="classical")
         >>>     session.add(new_genre)
+
+    :raise RuntimeError: if ``SQLITE_DB_PATH`` environment variable not set
+    :raise FileNotFoundError: if the path ``SQLITE_DB_PATH`` does not exist
     """
     try:
         sqlite_path = Path(os.environ[SQLITE_DB_PATH]).resolve(strict=True)
