@@ -41,21 +41,20 @@ class GenreClassificationModel:
         #   https://www.tensorflow.org/tutorials/images/data_augmentation#train_a_model
         # Date: 11/3/2022
         self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
-        self._model.add(tf.keras.layers.MaxPooling2D()),
+        self._model.add(tf.keras.layers.MaxPooling2D(3, padding="same")),
         self._model.add(tf.keras.layers.BatchNormalization())
 
         self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
-        self._model.add(tf.keras.layers.MaxPooling2D()),
-        self._model.add(tf.keras.layers.BatchNormalization()),
+        self._model.add(tf.keras.layers.MaxPooling2D(3, padding="same")),
+        self._model.add(tf.keras.layers.BatchNormalization())
 
         self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
-        self._model.add(tf.keras.layers.MaxPooling2D()),
-        self._model.add(tf.keras.layers.BatchNormalization()),
+        self._model.add(tf.keras.layers.MaxPooling2D(3, padding="same")),
+        self._model.add(tf.keras.layers.BatchNormalization())
 
-        self._model.add(tf.keras.layers.Dropout(0.25)),
         self._model.add(tf.keras.layers.Flatten()),
         self._model.add(tf.keras.layers.Dense(128, activation="relu")),
-        self._model.add(tf.keras.layers.Dropout(0.5)),
+        self._model.add(tf.keras.layers.Dropout(0.3)),
         self._model.add(
             tf.keras.layers.Dense(
                 self._spectrogram_data.number_of_labels,
