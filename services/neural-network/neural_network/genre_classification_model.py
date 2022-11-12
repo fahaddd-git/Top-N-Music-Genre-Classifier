@@ -14,8 +14,9 @@ class GenreClassificationModel:
         self._model = tf.keras.models.Sequential()
         self._add_preprocessing_layers()
         self._add_normalization_layers()
-        self._add_convolutional_layers()
-        self._compile()
+
+        # self._add_convolutional_layers()
+        # self._compile()
 
     def _add_preprocessing_layers(self) -> None:
         """Preprocess and attach input tensor"""
@@ -34,21 +35,21 @@ class GenreClassificationModel:
         """Attach normalization tensors"""
         pass
 
-    def _add_convolutional_layers(self) -> None:
+    def _add_convolutional_layers(self, first, second, third) -> None:
         """Attach convolutional layers"""
         # Adapted from the following sources:
         #   https://www.tensorflow.org/tutorials/audio/simple_audio
         #   https://www.tensorflow.org/tutorials/images/data_augmentation#train_a_model
         # Date: 11/3/2022
-        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
+        self._model.add(tf.keras.layers.Conv2D(*first, activation="relu")),
         self._model.add(tf.keras.layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.BatchNormalization())
 
-        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
+        self._model.add(tf.keras.layers.Conv2D(*second, activation="relu")),
         self._model.add(tf.keras.layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.BatchNormalization()),
 
-        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
+        self._model.add(tf.keras.layers.Conv2D(*third, activation="relu")),
         self._model.add(tf.keras.layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.BatchNormalization()),
 
