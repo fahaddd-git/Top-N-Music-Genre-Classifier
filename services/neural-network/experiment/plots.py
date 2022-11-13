@@ -96,7 +96,7 @@ if __name__ == "__main__":
         False,
     )
     plot_loss(
-        df, f"All Kernal Sizes | Min: {df['loss'].min()}.3f", "loss_all_kernal_sizes.png", False
+        df, f"All Kernal Sizes | Min: {df['loss'].min():.3f}", "loss_all_kernal_sizes.png", False
     )
 
     plot_accuracy(
