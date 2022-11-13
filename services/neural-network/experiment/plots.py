@@ -137,3 +137,5 @@ if __name__ == "__main__":
         "loss_kernal_size_5.png",
         False,
     )
+
+    print(df.sort_values(["accuracy", "loss"])[-15:].to_string())
