@@ -41,7 +41,12 @@ class GenreClassificationModel:
         #   https://www.tensorflow.org/tutorials/audio/simple_audio
         #   https://www.tensorflow.org/tutorials/images/data_augmentation#train_a_model
         # Date: 11/3/2022
-        self._model.add(tf.keras.layers.Conv2D(*first, activation="relu")),
+        self._model.add(
+            tf.keras.layers.Conv2D(
+                *first,
+                activation="relu",
+            )
+        ),
         self._model.add(tf.keras.layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.BatchNormalization())
 

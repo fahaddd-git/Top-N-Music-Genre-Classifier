@@ -2,9 +2,10 @@ import csv
 from ast import literal_eval
 
 import matplotlib.pyplot as plt
+import pandas as pd
 
 
-def read_file(filename):
+def read_file(filename: str) -> dict:
     results = {
         "loss": [],
         "accuracy": [],
@@ -32,10 +33,7 @@ def read_file(filename):
     return results
 
 
-data = read_file("./test_results.txt")
-
-
-def plot_accuracy():
+def plot_accuracy(data: dict, title: str, fname: str, show: bool = False) -> None:
     fig = plt.figure()
     ax = plt.axes(projection="3d")
 
@@ -45,18 +43,21 @@ def plot_accuracy():
         data["third_filters"],
         c=data["accuracy"],
         cmap="gnuplot_r",
-        linewidth=0.5,
+        marker=".",
+        # linewidth=0.5,
     )
     fig.colorbar(p, location="left", label="accuracy")
     ax.set_xlabel("Filters In First Layer")
     ax.set_ylabel("Filters In Second Layer")
     ax.set_zlabel("Filters In Third Layer")
-    ax.set_title("Trained With 5 Epochs")
+    ax.set_title(title)
 
-    plt.savefig("accuracy.png", dpi=300)
+    plt.savefig(fname, dpi=300)
+    if show:
+        plt.show()
 
 
-def plot_loss():
+def plot_loss(data: dict, title: str, fname: str, show: bool = False) -> None:
     fig = plt.figure()
     ax = plt.axes(projection="3d")
 
@@ -66,16 +67,38 @@ def plot_loss():
         data["third_filters"],
         c=data["loss"],
         cmap="gnuplot_r",
-        linewidth=0.5,
+        marker=".",
+        # linewidth=0.5,
     )
     fig.colorbar(p, location="left", label="loss")
     ax.set_xlabel("Filters In First Layer")
     ax.set_ylabel("Filters In Second Layer")
     ax.set_zlabel("Filters In Third Layer")
-    ax.set_title("Trained With 5 Epochs")
+    ax.set_title(title)
 
-    plt.savefig("loss.png", dpi=300)
+    plt.savefig(fname, dpi=300)
+    if show:
+        plt.show()
 
 
-plot_accuracy()
-plot_loss()
+if __name__ == "__main__":
+    data = read_file("./test_results.txt")
+    df = pd.DataFrame(data)
+
+    plot_accuracy(df, "All Kernal Size", "accuracy_all_kernal_sizes.png", False)
+    plot_loss(df, "All Kernal Sizes", "loss_all_kernal_sizes.png", False)
+
+    plot_accuracy(
+        df[df["first_kernal"] == 1], "All Kernal Sizes = 1", "accuracy_kernal_size_1.png", False
+    )
+    plot_loss(df[df["first_kernal"] == 1], "All Kernal Sizes", "loss_kernal_size_1.png", False)
+
+    plot_accuracy(
+        df[df["first_kernal"] == 3], "All Kernal Sizes = 3", "accuracy_kernal_size_3.png", False
+    )
+    plot_loss(df[df["first_kernal"] == 3], "All Kernal Sizes", "loss_kernal_size_3.png", False)
+
+    plot_accuracy(
+        df[df["first_kernal"] == 5], "All Kernal Sizes = 5", "accuracy_kernal_size_5.png", False
+    )
+    plot_loss(df[df["first_kernal"] == 5], "All Kernal Sizes", "loss_kernal_size_5.png", False)
