@@ -85,20 +85,55 @@ if __name__ == "__main__":
     data = read_file("./test_results.txt")
     df = pd.DataFrame(data)
 
-    plot_accuracy(df, "All Kernal Size", "accuracy_all_kernal_sizes.png", False)
-    plot_loss(df, "All Kernal Sizes", "loss_all_kernal_sizes.png", False)
+    df_size1 = df[df["first_kernal"] == 1]
+    df_size3 = df[df["first_kernal"] == 3]
+    df_size5 = df[df["first_kernal"] == 5]
 
     plot_accuracy(
-        df[df["first_kernal"] == 1], "All Kernal Sizes = 1", "accuracy_kernal_size_1.png", False
+        df,
+        f"All Kernal Size | Max: {df['accuracy'].max():.3f}",
+        "accuracy_all_kernal_sizes.png",
+        False,
     )
-    plot_loss(df[df["first_kernal"] == 1], "All Kernal Sizes", "loss_kernal_size_1.png", False)
+    plot_loss(
+        df, f"All Kernal Sizes | Min: {df['loss'].min()}.3f", "loss_all_kernal_sizes.png", False
+    )
 
     plot_accuracy(
-        df[df["first_kernal"] == 3], "All Kernal Sizes = 3", "accuracy_kernal_size_3.png", False
+        df_size1,
+        f"Kernal Sizes = 1 | Max: {df_size1['accuracy'].max():.3f}",
+        "accuracy_kernal_size_1.png",
+        False,
     )
-    plot_loss(df[df["first_kernal"] == 3], "All Kernal Sizes", "loss_kernal_size_3.png", False)
+    plot_loss(
+        df_size1,
+        f"Kernal Sizes = 1 | Min: {df_size1['loss'].min():.3f}",
+        "loss_kernal_size_1.png",
+        False,
+    )
 
     plot_accuracy(
-        df[df["first_kernal"] == 5], "All Kernal Sizes = 5", "accuracy_kernal_size_5.png", False
+        df_size3,
+        f"Kernal Sizes = 3 | Max: {df_size3['accuracy'].max():.3f}",
+        "accuracy_kernal_size_3.png",
+        False,
     )
-    plot_loss(df[df["first_kernal"] == 5], "All Kernal Sizes", "loss_kernal_size_5.png", False)
+    plot_loss(
+        df_size3,
+        f"Kernal Sizes = 3 | Min: {df_size3['loss'].min():.3f}",
+        "loss_kernal_size_3.png",
+        False,
+    )
+
+    plot_accuracy(
+        df_size5,
+        f"Kernal Sizes = 5 | Max: {df_size5['accuracy'].max():.3f}",
+        "accuracy_kernal_size_5.png",
+        False,
+    )
+    plot_loss(
+        df_size5,
+        f"Kernal Sizes = 5 | Min: {df_size5['loss'].min():.3f}",
+        "loss_kernal_size_5.png",
+        False,
+    )
