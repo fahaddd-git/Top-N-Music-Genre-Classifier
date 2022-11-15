@@ -15,7 +15,9 @@ export type PredictionTableProps = {
  * A table containing predicted genres and their confidence values. Sorted in
  * descending order by confidence value by default.
  *
- * @see https://mui.com/material-ui/react-table/#EnhancedTable.tsx which inspired this component
+ * Inspired by:
+ *  URL: https://mui.com/material-ui/react-table/#EnhancedTable.tsx
+ *  Date: 11/6/22
  */
 export const PredictionTable = (props: PredictionTableProps) => {
   const { columns, predictions } = props;
