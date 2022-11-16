@@ -1,6 +1,10 @@
 from fastapi import status
 from fastapi.testclient import TestClient
 
+# The tests in this file follow the formatting suggested by FastAPI. Adapted from:
+#  URL: https://fastapi.tiangolo.com/tutorial/testing
+#  Date: 11/16/22
+
 
 def test_content_header_missing_returns_411(test_client: TestClient):
     response = test_client.post("/api/predict-genres", headers={"content-length": ""})
