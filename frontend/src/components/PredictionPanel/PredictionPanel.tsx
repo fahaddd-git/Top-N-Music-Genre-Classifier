@@ -2,13 +2,10 @@ import { useState } from 'react';
 import {
   Alert,
   AlertTitle,
-  Fade,
+  Collapse,
   Container,
   TableContainer,
   Typography,
-  Stack,
-  Box,
-  Collapse,
 } from '@mui/material';
 import { UploadButton } from 'src/components';
 import { useGetPredictions } from './hooks';
@@ -16,8 +13,6 @@ import { PredictionTable } from './PredictionTable';
 
 export const PredictionPanel = () => {
   const { loading, error, predictions, getPredictions } = useGetPredictions();
-
-  // const error = 'Error Message That Is Really Long...Error Message That Is Really Long... ';
 
   const onChange = (event: React.FormEvent) => {
     const files = (event.target as HTMLInputElement).files;
@@ -37,7 +32,7 @@ export const PredictionPanel = () => {
           loading={loading}
         />
       </Container>
-      {/* { error && <ErrorAlert error={error} /> } */}
+      { error && <ErrorAlert error={error} /> }
       <Container sx={{ mt: 3 }}>
         { predictions !== null && (
           <>
@@ -68,7 +63,6 @@ export const PredictionPanel = () => {
  */
 const ErrorAlert = ({ error }: { error: string }) => {
   const [open, setOpen] = useState(true);
-
   return (
     <Collapse in={open}>
       <Container maxWidth="xs" sx={{ float: 'left' }}>

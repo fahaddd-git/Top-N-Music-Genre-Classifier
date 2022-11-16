@@ -19,6 +19,7 @@ export const useGetPredictions = () => {
   // or similar tricks in upstream effect hooks
   const getPredictions = useCallback(async (audioFile: File) => {
     setLoading(true);
+    setError(null);
 
     let processedAudioFile = null;
     try {
