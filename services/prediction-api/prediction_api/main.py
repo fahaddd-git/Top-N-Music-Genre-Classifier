@@ -1,6 +1,16 @@
 import uvicorn
 from prediction_api.config import get_settings
 
-if __name__ == "__main__":
+
+def start_server():
     SETTINGS = get_settings()
-    uvicorn.run("app:app", host=SETTINGS.host, port=SETTINGS.port, reload=SETTINGS.debug)
+    uvicorn.run(
+        "prediction_api.app:app",
+        host=SETTINGS.host,
+        port=SETTINGS.port,
+        reload=SETTINGS.debug,
+    )
+
+
+if __name__ == "__main__":
+    start_server()
