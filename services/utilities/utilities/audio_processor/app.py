@@ -1,6 +1,7 @@
 from os import PathLike
 from typing import Iterator, TypeAlias
 
+import joblib
 import librosa
 import numpy as np
 from numpy.typing import NDArray
@@ -9,7 +10,7 @@ from PIL import Image
 PILImage: TypeAlias = Image.Image
 
 
-def spectrogram_generator(
+def audio_slicer(
     file_path: str | PathLike,
     desired_segments_seconds: int = 5,
     sample_rate: int = 22050,
@@ -25,24 +26,15 @@ def spectrogram_generator(
     :return: Power Mel Spectrogram constructed from audio file with n_mels=128
     """
     audio_data, sr = librosa.load(file_path, sr=sample_rate, mono=True, duration=duration)
-    clip_duration = librosa.get_duration(y=audio_data, sr=sr)
-    # available slices of desired_segments_seconds
-    possible_segments = int(clip_duration / desired_segments_seconds)
+    window_size = sr * desired_segments_seconds
+    audio_windowed = np.array_split(
+        audio_data, np.arange(window_size, audio_data.size, window_size)
+    )
+    # check for potential last window being too short
+    if audio_windowed[-1].size != window_size:
+        return audio_windowed[:-1]
 
-    # Logic to convert STFTs to mel spectrogram inspired by:
-    # URL:  https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html
-    # Date: 11/12/2022
-    total_sample_length = sample_rate * possible_segments
-    samples_per_segment = int((total_sample_length / possible_segments) * desired_segments_seconds)
-    for segment_number in range(possible_segments):
-        start = samples_per_segment * segment_number
-        end = start + samples_per_segment
-        mel_spectro = librosa.feature.melspectrogram(
-            y=audio_data[start:end],
-            sr=sample_rate,
-            n_mels=128,
-        )
-        yield mel_spectro
+    return audio_windowed
 
 
 def transform_spectrogram(spectrogram: NDArray) -> NDArray:
@@ -82,8 +74,7 @@ def log_spectrogram(mel_spectrogram: NDArray) -> NDArray:
     :param mel_spectrogram: Mel spectrogram to be converted
     :return: Log Mel Spectrogram
     """
-    log_mel_spectrogram = librosa.power_to_db(mel_spectrogram, ref=np.max)
-    return log_mel_spectrogram
+    return librosa.power_to_db(mel_spectrogram, ref=np.max)
 
 
 def convert_sound_to_image(
@@ -104,10 +95,9 @@ def convert_sound_to_image(
         "desired_segments_seconds": duration,
         "duration": duration,
     }
-    spectrogram_gen = spectrogram_generator(sound_file_path, **librosa_options)
-    spec = next(spectrogram_gen)
+    spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
 
-    log_spec = log_spectrogram(spec)
+    log_spec = log_spectrogram(spectrogram_gen)
     image = spectrogram_to_image(log_spec)
     return image
 
@@ -124,8 +114,19 @@ def generate_sound_images(sound_file_path: str | PathLike, **librosa_options) ->
     :param librosa_options: Options used by Librosa for creating the spectrogram
     :return: Generator of Log Mel Spectrograms as PIL Image instances
     """
-    spectrogram_gen = spectrogram_generator(sound_file_path, **librosa_options)
-    for spec in spectrogram_gen:
-        log_spec = log_spectrogram(spec)
-        image = spectrogram_to_image(log_spec)
-        yield image
+    spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
+
+    def mapper(data):
+        return spectrogram_to_image(
+            log_spectrogram(
+                librosa.feature.melspectrogram(
+                    y=data,
+                    sr=22050,
+                    n_mels=128,
+                )
+            )
+        )
+
+    with joblib.parallel_backend(backend="threading", n_jobs=2):
+        output = joblib.Parallel()([joblib.delayed(mapper)(data) for data in spectrogram_gen])
+        return output
