@@ -1,3 +1,4 @@
+import json
 from os import PathLike
 from pathlib import Path
 
@@ -60,7 +61,7 @@ class GenreClassificationModel:
             tf.keras.layers.Dense(
                 self._spectrogram_data.number_of_labels,
                 activation="softmax",  # coerce to 0..1
-                name="softmax_output_layer",
+                name="softmax_output",
             )
         )
 
@@ -96,9 +97,12 @@ class GenreClassificationModel:
         return self._model.predict(tensor)
 
     def save(self, directory: str | PathLike) -> None:
-        """Outputs the model in its current state to the specified output directory. If the path
-        does not already exist, it is created. Any existing files are overwritten.
+        """Outputs the model in its current state and an index-to-string ``labels.json`` mapping
+        to the specified output directory. Any existing files are overwritten.
         """
         path = Path(directory).resolve()
         path.mkdir(parents=True, exist_ok=True)
         tf.keras.models.save_model(self._model, path, overwrite=True)
+        with open(path / "labels.json", "w") as json_file:
+            encoded_json = json.dumps(self._spectrogram_data.label_mapping)
+            json_file.write(encoded_json)

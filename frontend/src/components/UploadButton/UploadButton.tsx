@@ -12,6 +12,8 @@ export const UploadButton = (props: UploadButtonProps) => {
   return (
     <Button
       variant="contained"
+      // MUI documentation suggests using a hidden native <input> for uploads and rendering the
+      // button element as a label; see https://mui.com/material-ui/react-button/#upload-button
       component="label"
       disabled={loading}
     >

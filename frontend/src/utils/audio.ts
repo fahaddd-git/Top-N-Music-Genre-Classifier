@@ -1,12 +1,15 @@
 const MIN_AUDIO_LENGTH = 30;  // seconds
+const MAX_FILE_SIZE_MB = 50;
 
 /**
  * Validates and preprocesses an uploaded audio file
- * @return Promise that resolves to a 30-second clip of the passed audio file
  */
 export async function processAudioFile (audioFile: File): Promise<File> {
   if (!audioFile.type.startsWith('audio')) {
     return await Promise.reject(new Error('Not an audio file type'));
+  }
+  if (audioFile.size > (MAX_FILE_SIZE_MB * 1024 * 1024)) {
+    return await Promise.reject(new Error(`Audio file must be less than ${MAX_FILE_SIZE_MB} MB`));
   }
 
   return await new Promise((resolve, reject) => {
@@ -25,6 +28,7 @@ export async function processAudioFile (audioFile: File): Promise<File> {
         })
         .catch(err => {
           console.error(err);
+          reject(new Error('Error processing audio file. Try a different file.'));
         });
     };
 
