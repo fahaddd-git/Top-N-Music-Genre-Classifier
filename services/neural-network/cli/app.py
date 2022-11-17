@@ -47,7 +47,9 @@ def generate_model(
 
         # prompt for save
         should_save = typer.confirm(f"Save model to {output_directory}?")
-        should_write = not output_directory.exists() or typer.confirm("Overwrite existing model?")
+        should_write = should_save and (
+            not output_directory.exists() or typer.confirm("Overwrite existing model?")
+        )
         if should_save and should_write:
             print(f"Saving to {output_directory}...")
             spectrogram_model.save(output_directory)

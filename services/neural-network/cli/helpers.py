@@ -7,7 +7,7 @@ from absl import logging as absl_logging
 
 def set_reasonable_logging_settings():
     """Set loggers to a verbosity level  appropriate for user interaction"""
-    # See https:// tensorflow.org/datasets/cli#disable_tf_logs_on_import
+    # See https://tensorflow.org/datasets/cli#disable_tf_logs_on_import
     # This needs to be set before tensorflow is imported anywhere
     os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 

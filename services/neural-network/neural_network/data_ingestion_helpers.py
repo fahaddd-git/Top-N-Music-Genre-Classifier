@@ -2,8 +2,6 @@ from dataclasses import dataclass
 from math import ceil
 from typing import Annotated
 
-# from PIL.Image import NEAREST
-# import numpy as np
 import tensorflow as tf
 from numpy.typing import NDArray
 from sqlalchemy import func

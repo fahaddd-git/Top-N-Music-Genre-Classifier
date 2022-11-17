@@ -39,5 +39,5 @@ def results_table(results: dict[str, float]) -> console.ConsoleRenderable:
         title_style=style.Style(bold=True, color="blue"),
     )
     for key, value in results.items():
-        formatted_results_table.add_row(f"{key}".title(), f"{value:.4f}")
+        formatted_results_table.add_row(f"{key}".replace("_", " ").title(), f"{value:.4f}")
     return padding.Padding(formatted_results_table, (1, 0))
