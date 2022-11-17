@@ -1,9 +1,10 @@
 import uvicorn
 from prediction_api.config import get_settings
 
+SETTINGS = get_settings()
+
 
 def start_server():
-    SETTINGS = get_settings()
     uvicorn.run(
         "prediction_api.app:app",
         host=SETTINGS.host,

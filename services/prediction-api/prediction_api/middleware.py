@@ -5,10 +5,10 @@ from starlette.types import ASGIApp
 
 
 class LimitUploadFilesizeMiddleware(BaseHTTPMiddleware):
-    """Middleware limiting ``POST`` request size to ``max_megabytes``
+    """Middleware limiting ``POST`` request size to ``max_megabytes``"""
 
-    Implementation based on information from https://www.starlette.io/middleware/
-    """
+    # class implementation follows the formatting required by Starlette
+    # see: https://www.starlette.io/middleware/#basehttpmiddleware
 
     def __init__(self, app: ASGIApp, max_megabytes: int):
         super().__init__(app)

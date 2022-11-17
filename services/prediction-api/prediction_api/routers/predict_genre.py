@@ -1,13 +1,11 @@
 import io
-import json
-from functools import cache
-from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import Final
 
 import numpy as np
 import tensorflow as tf
 from fastapi import APIRouter, HTTPException, UploadFile, status
+from prediction_api.dependencies import get_label_mappings, get_model
 from pydantic import BaseModel
 from utilities.audio_processor import generate_sound_images
 
@@ -102,23 +100,3 @@ def construct_input_tensor(sound_data: bytes) -> tf.RaggedTensor:
                 images.append(decoded_image)
     tensor = tf.ragged.stack(images)
     return tensor
-
-
-@cache
-def get_model():
-    """Loads model, assumes it's at ./model"""
-    model = tf.keras.models.load_model(
-        filepath=Path(__file__).resolve().parent / "model",
-        compile=True,
-    )
-    return model
-
-
-@cache
-def get_label_mappings():
-    """Loads numeric-to-string label decoder, assumes it's at ./model"""
-    labels_json = Path(__file__).resolve().parent / "model" / "labels.json"
-    with open(labels_json, "r") as labels:
-        parsed_json = json.load(labels)
-        label_mapper = {int(index): label for index, label in parsed_json.items()}
-        return label_mapper

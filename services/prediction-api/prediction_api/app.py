@@ -1,9 +1,8 @@
-from pathlib import Path
-
 from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from prediction_api.config import get_settings
+from prediction_api.dependencies import get_label_mappings, get_model
 from prediction_api.middleware import LimitUploadFilesizeMiddleware
 from prediction_api.routers.predict_genre import router as predict_genre_router
 from pydantic import BaseModel
@@ -45,16 +44,23 @@ app.include_router(
 )
 
 # resolve static content server
-static_content_dir = Path(__file__).resolve().parent / SETTINGS.static_content_dir
 static_content_app = StaticFiles(
-    directory=static_content_dir,
+    directory=SETTINGS.static_content_dir,
     html=True,
     check_dir=False,
 )
-if Path(static_content_dir).is_dir():
+if SETTINGS.static_content_dir.is_dir():
     app.mount("/", app=static_content_app, name="static")
 else:
 
     @app.get("/")
     async def root():
         return {"message": "Development mode. No static content directory detected."}
+
+
+@app.on_event("startup")
+def load_and_cache_dependencies():
+    print("\n* Loading model...\n")
+    get_model()
+    get_label_mappings()
+    print("\n* Done loading model\n")
