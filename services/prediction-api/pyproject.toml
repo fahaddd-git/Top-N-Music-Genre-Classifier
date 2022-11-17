@@ -9,6 +9,9 @@ authors = [
 ]
 packages = [{include = "prediction_api"}]
 
+[tool.poetry.scripts]
+start = "prediction_api.main:start_server"
+
 [tool.poetry.dependencies]
 python = "~3.10"
 fastapi = "^0.87.0"
