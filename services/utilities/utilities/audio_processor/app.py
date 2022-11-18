@@ -78,7 +78,7 @@ def log_spectrogram(mel_spectrogram: NDArray) -> NDArray:
 
 
 def convert_sound_to_image(
-    sound_file_path: str | PathLike, duration: int = 30, **librosa_options
+    sound_file_path: str | PathLike, duration: int = 30, **librosa_options: dict
 ) -> PILImage:
     """Interface for converting sound to single image.
 
@@ -102,7 +102,9 @@ def convert_sound_to_image(
     return image
 
 
-def generate_sound_images(sound_file_path: str | PathLike, **librosa_options) -> Iterator[PILImage]:
+def generate_sound_images(
+    sound_file_path: str | PathLike, n_threads: int = 2, **librosa_options: dict
+) -> Iterator[PILImage]:
     """Interface for converting sound to multiple images
 
     Default ``librosa_options`` are:
@@ -111,6 +113,7 @@ def generate_sound_images(sound_file_path: str | PathLike, **librosa_options) ->
         * duration: int = 30
 
     :param sound_file_path: Path to audio file
+    :param n_threads: Number of threads to use when processing spectrogram
     :param librosa_options: Options used by Librosa for creating the spectrogram
     :return: Generator of Log Mel Spectrograms as PIL Image instances
     """
