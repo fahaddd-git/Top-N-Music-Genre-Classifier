@@ -1,3 +1,4 @@
+import json
 from os import PathLike
 from pathlib import Path
 
@@ -14,9 +15,8 @@ class GenreClassificationModel:
         self._model = tf.keras.models.Sequential()
         self._add_preprocessing_layers()
         self._add_normalization_layers()
-
-        # self._add_convolutional_layers()
-        # self._compile()
+        self._add_convolutional_layers()
+        self._compile()
 
     def _add_preprocessing_layers(self) -> None:
         """Preprocess and attach input tensor"""
@@ -35,26 +35,21 @@ class GenreClassificationModel:
         """Attach normalization tensors"""
         pass
 
-    def _add_convolutional_layers(self, first, second, third) -> None:
+    def _add_convolutional_layers(self) -> None:
         """Attach convolutional layers"""
         # Adapted from the following sources:
         #   https://www.tensorflow.org/tutorials/audio/simple_audio
         #   https://www.tensorflow.org/tutorials/images/data_augmentation#train_a_model
         # Date: 11/3/2022
-        self._model.add(
-            tf.keras.layers.Conv2D(
-                *first,
-                activation="relu",
-            )
-        ),
+        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
         self._model.add(tf.keras.layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.BatchNormalization())
 
-        self._model.add(tf.keras.layers.Conv2D(*second, activation="relu")),
+        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
         self._model.add(tf.keras.layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.BatchNormalization()),
 
-        self._model.add(tf.keras.layers.Conv2D(*third, activation="relu")),
+        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
         self._model.add(tf.keras.layers.MaxPooling2D()),
         self._model.add(tf.keras.layers.BatchNormalization()),
 
@@ -66,7 +61,7 @@ class GenreClassificationModel:
             tf.keras.layers.Dense(
                 self._spectrogram_data.number_of_labels,
                 activation="softmax",  # coerce to 0..1
-                name="softmax_output_layer",
+                name="softmax_output",
             )
         )
 
@@ -102,9 +97,12 @@ class GenreClassificationModel:
         return self._model.predict(tensor)
 
     def save(self, directory: str | PathLike) -> None:
-        """Outputs the model in its current state to the specified output directory. If the path
-        does not already exist, it is created. Any existing files are overwritten.
+        """Outputs the model in its current state and an index-to-string ``labels.json`` mapping
+        to the specified output directory. Any existing files are overwritten.
         """
         path = Path(directory).resolve()
         path.mkdir(parents=True, exist_ok=True)
         tf.keras.models.save_model(self._model, path, overwrite=True)
+        with open(path / "labels.json", "w") as json_file:
+            encoded_json = json.dumps(self._spectrogram_data.label_mapping)
+            json_file.write(encoded_json)
