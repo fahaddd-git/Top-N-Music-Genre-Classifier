@@ -78,7 +78,7 @@ def log_spectrogram(mel_spectrogram: NDArray) -> NDArray:
 
 
 def convert_sound_to_image(
-    sound_file_path: str | PathLike, duration: int = 30, **librosa_options: dict
+    sound_file_path: str | PathLike, duration: int = 30, **librosa_options: int
 ) -> PILImage:
     """Interface for converting sound to single image.
 
@@ -103,7 +103,7 @@ def convert_sound_to_image(
 
 
 def generate_sound_images(
-    sound_file_path: str | PathLike, n_threads: int = 2, **librosa_options: dict
+    sound_file_path: str | PathLike, n_threads: int = 2, **librosa_options: int
 ) -> Iterator[PILImage]:
     """Interface for converting sound to multiple images
 
@@ -124,12 +124,12 @@ def generate_sound_images(
             log_spectrogram(
                 librosa.feature.melspectrogram(
                     y=data,
-                    sr=22050,
+                    sr=librosa_options.get("sample_rate", 22050),
                     n_mels=128,
                 )
             )
         )
 
-    with joblib.parallel_backend(backend="threading", n_jobs=2):
+    with joblib.parallel_backend(backend="threading", n_jobs=n_threads):
         output = joblib.Parallel()([joblib.delayed(mapper)(data) for data in spectrogram_gen])
         return output
