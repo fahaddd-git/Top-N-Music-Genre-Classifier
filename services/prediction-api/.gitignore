@@ -1,2 +1,3 @@
-# static content dir
+# static content
 prediction_api/static/
+prediction_api/model/
