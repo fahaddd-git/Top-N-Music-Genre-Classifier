@@ -8,7 +8,7 @@ SETTINGS = get_settings()
 
 
 @cache
-def get_model():
+def get_model() -> tf.keras.Sequential:
     """Return genre prediction Tensorflow model"""
     model = tf.keras.models.load_model(
         filepath=SETTINGS.model_dir,
@@ -18,9 +18,9 @@ def get_model():
 
 
 @cache
-def get_label_mappings():
+def get_label_map() -> dict[int, str]:
     """Return index-to-string label decoder"""
     with open(SETTINGS.labels_json, "r") as labels:
         parsed_json = json.load(labels)
-        label_mapper = {int(index): label for index, label in parsed_json.items()}
-        return label_mapper
+        label_map = {int(index): label for index, label in parsed_json.items()}
+        return label_map

@@ -5,7 +5,7 @@ from typing import Final
 import numpy as np
 import tensorflow as tf
 from fastapi import APIRouter, HTTPException, UploadFile, status
-from prediction_api.dependencies import get_label_mappings, get_model
+from prediction_api.dependencies import get_label_map, get_model
 from pydantic import BaseModel
 from utilities.audio_processor import generate_sound_images
 
@@ -67,7 +67,7 @@ def predict(sound_data: bytes) -> dict[str, float]:
     :return: dict of genre-confidence pairs
     """
     model = get_model()
-    label_map = get_label_mappings()
+    label_map = get_label_map()
 
     input_tensor = construct_input_tensor(sound_data)
     probabilities = model.predict(input_tensor)

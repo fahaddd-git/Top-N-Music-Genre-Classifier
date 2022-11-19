@@ -2,7 +2,7 @@ from fastapi import FastAPI, status
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from prediction_api.config import get_settings
-from prediction_api.dependencies import get_label_mappings, get_model
+from prediction_api.dependencies import get_label_map, get_model
 from prediction_api.middleware import LimitUploadFilesizeMiddleware
 from prediction_api.routers.predict_genre import router as predict_genre_router
 from pydantic import BaseModel
@@ -62,5 +62,5 @@ else:
 def load_and_cache_dependencies():
     print("\n* Loading model...\n")
     get_model()
-    get_label_mappings()
+    get_label_map()
     print("\n* Done loading model\n")
