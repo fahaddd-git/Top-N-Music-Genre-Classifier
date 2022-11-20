@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "etl-service"
-version = "0.1.0"
+version = "0.1.1"
 description = "ETL data pipeline"
 authors = [
     "Fahad Awan",
@@ -9,8 +9,14 @@ authors = [
 ]
 packages = [{include = "etl_service"}]
 
+[tool.poetry.scripts]
+start = "cli.main:main"
+
 [tool.poetry.dependencies]
 python = "~3.10"
+sqlalchemy = "^1.4.44"
+typer = "^0.7.0"
+rich = "^12.6.0"
 
 [tool.poetry.group.local.dependencies]
 utilities = {path = "../utilities"}

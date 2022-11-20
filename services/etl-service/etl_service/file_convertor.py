@@ -2,8 +2,8 @@ import io
 from pathlib import Path
 from typing import Iterable
 
-from data_set_helper import DataSetHelper
 from etl_service.contracts.spectrogram import Spectrogram
+from etl_service.data_set_helper import DataSetHelper
 from utilities.audio_processor import convert_sound_to_image
 
 
@@ -15,7 +15,7 @@ class FileConvertor:
 
     def __init__(self, data_set_helper: DataSetHelper, processed_dir: Path = None):
         """
-        :param gtzan_helper: an instance of the DataSetHelper class
+        :param data_set_helper: an instance of the DataSetHelper class
         :param processed_dir: a directory where the wav file will end up after
         they are processed.
         """
