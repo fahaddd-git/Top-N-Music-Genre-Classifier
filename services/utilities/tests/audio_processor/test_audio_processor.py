@@ -23,23 +23,25 @@ def load_librosa_mel_spectrogram(sample_wav_path, desired_duration):
 
 
 @pytest.fixture
-def load_spectrogram_generator(sample_wav_path, desired_duration):
-    return app.spectrogram_generator(sample_wav_path, desired_segments_seconds=desired_duration)
+def load_sliced_audio(sample_wav_path, desired_duration):
+    return app.audio_slicer(sample_wav_path, desired_segments_seconds=desired_duration)
 
 
-def test_spectrogram_generator(load_librosa_mel_spectrogram, load_spectrogram_generator):
+def test_audio_slicer(load_librosa_mel_spectrogram, load_sliced_audio):
     """Tests if librosa.load generated mel spectrogram matches sliced mel spectrogram"""
-    spectrogram = next(load_spectrogram_generator)
+    spectrogram = librosa.feature.melspectrogram(y=load_sliced_audio[0], sr=22050)
     assert np.array_equiv(load_librosa_mel_spectrogram, spectrogram)
-    assert load_librosa_mel_spectrogram.shape == spectrogram.shape
     # check shapes of rest of slices
-    for item in load_spectrogram_generator:
-        assert load_librosa_mel_spectrogram.shape == item.shape
+    for item in load_sliced_audio:
+        assert (
+            load_librosa_mel_spectrogram.shape
+            == librosa.feature.melspectrogram(y=item, sr=22050).shape
+        )
 
 
-def test_transform_spectrogram(load_spectrogram_generator):
+def test_transform_spectrogram(load_sliced_audio):
     """Tests if min and max are [0-255]"""
-    for spectrogram in load_spectrogram_generator:
+    for spectrogram in load_sliced_audio:
         transformed = app.transform_spectrogram(spectrogram)
         assert np.all((transformed >= 0) & (transformed <= 255))
 
@@ -61,14 +63,14 @@ def test_convert_sound_to_image(sample_wav_path):
     assert isinstance(image, Image.Image)
 
 
-@patch(f"{MODULE_PATH}.spectrogram_generator")
-def test_duration_and_segments_seconds_not_passed(patched_spectrogram_generator, sample_wav_path):
+@patch(f"{MODULE_PATH}.audio_slicer")
+def test_duration_and_segments_seconds_not_passed(patched_audio_slicer, sample_wav_path):
     librosa_options_overwritten_in_function = ("duration", "desired_segments_seconds")
     expected_value = 20
 
     with patch(f"{MODULE_PATH}.spectrogram_to_image"), patch(f"{MODULE_PATH}.log_spectrogram"):
         app.convert_sound_to_image(sample_wav_path, duration=20, desired_segments_seconds=13)
         assert all(
-            patched_spectrogram_generator.call_args.kwargs[key] == expected_value
+            patched_audio_slicer.call_args.kwargs[key] == expected_value
             for key in librosa_options_overwritten_in_function
         )
