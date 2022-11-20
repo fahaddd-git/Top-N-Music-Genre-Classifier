@@ -26,6 +26,10 @@ def audio_slicer(
     :return: Power Mel Spectrogram constructed from audio file with n_mels=128
     """
     audio_data, sr = librosa.load(file_path, sr=sample_rate, mono=True, duration=duration)
+    if (audio_data.size / sr) < desired_segments_seconds:
+        audio_data = librosa.util.fix_length(
+            audio_data, size=sr * desired_segments_seconds, mode="edge"
+        )
     window_size = sr * desired_segments_seconds
     audio_windowed = np.array_split(
         audio_data, np.arange(window_size, audio_data.size, window_size)
