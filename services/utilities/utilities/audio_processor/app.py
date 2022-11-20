@@ -1,5 +1,5 @@
 from os import PathLike
-from typing import Iterator, TypeAlias
+from typing import Iterator, List, TypeAlias
 
 import joblib
 import librosa
@@ -15,7 +15,7 @@ def audio_slicer(
     desired_segments_seconds: int = 5,
     sample_rate: int = 22050,
     duration: int = 90,
-) -> Iterator[NDArray]:
+) -> List[NDArray]:
     """Converts an audio stream to a mel spectrogram.
 
     :param file_path: Path to audio file
@@ -96,8 +96,10 @@ def convert_sound_to_image(
         "duration": duration,
     }
     spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
-
-    log_spec = log_spectrogram(spectrogram_gen)
+    spectrogram = librosa.feature.melspectrogram(
+        y=spectrogram_gen[0], hop_length=2048, sr=librosa_options.get("sample_rate", 22050)
+    )
+    log_spec = log_spectrogram(spectrogram)
     image = spectrogram_to_image(log_spec)
     return image
 
@@ -126,6 +128,7 @@ def generate_sound_images(
                     y=data,
                     sr=librosa_options.get("sample_rate", 22050),
                     n_mels=128,
+                    hop_length=2048,
                 )
             )
         )
