@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any, Callable
 
 from etl_service.file_convertor import FileConvertor
 from sqlalchemy import select
@@ -7,15 +8,15 @@ from utilities.db.connector import sqlite_session
 from utilities.db.models import Genre, Spectrogram
 
 
-def handle(file_converter: FileConvertor) -> int:
+def handle(file_converter: FileConvertor, callback: Callable[[int], Any] | None = None):
     """Handles the ETL process, converting and loading files to the database until all
     files are processed
 
-    :return: number of spectrograms added
+    :param file_converter: instance of FileConverter
+    :param callback: called with the number of spectrograms processed (return value ignored)
     """
-    spectrograms_processed = 0
     with sqlite_session().begin() as session:
-        for spectrogram in file_converter.convert_files():
+        for num_processed, spectrogram in enumerate(file_converter.convert_files(), start=1):
             try:
                 genre = session.execute(
                     select(Genre).filter_by(name=spectrogram.genre)
@@ -34,5 +35,5 @@ def handle(file_converter: FileConvertor) -> int:
                     last_modified=datetime.now(),
                 )
             )
-            spectrograms_processed += 1
-        return spectrograms_processed
+            if callable(callback):
+                callback(num_processed)

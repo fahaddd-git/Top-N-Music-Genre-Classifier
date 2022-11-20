@@ -44,16 +44,14 @@ def start_etl_service(
     spectrograms_task = progress_indicator.add_task(description="", total=None)
     update_task = partial(progress_indicator.update, spectrograms_task)
 
-    spectrograms_processed = 0
     while True:
         update_task(description="[bold italic green]Checking for and processing files...[/]")
-        spectrograms_processed += handle(file_converter)
+        handle(file_converter, lambda n: update_task(completed=n))
         time.sleep(2)  # smooth animation (if no files are processed)
 
         with pause_spinner():
             update_task(
                 description=f"[bold italic black]Sleeping for {seconds_to_sleep} seconds...[/]",
-                completed=spectrograms_processed,
             )
             time.sleep(seconds_to_sleep)
 
