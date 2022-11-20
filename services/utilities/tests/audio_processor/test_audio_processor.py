@@ -18,7 +18,7 @@ def desired_duration(request):
 @pytest.fixture
 def load_librosa_mel_spectrogram(sample_wav_path, desired_duration):
     signal, sr = librosa.load(sample_wav_path, sr=22050, duration=desired_duration)
-    librosa_mel = librosa.feature.melspectrogram(y=signal, sr=sr)
+    librosa_mel = librosa.feature.melspectrogram(y=signal, sr=sr, hop_length=2048)
     return librosa_mel
 
 
@@ -29,13 +29,13 @@ def load_sliced_audio(sample_wav_path, desired_duration):
 
 def test_audio_slicer(load_librosa_mel_spectrogram, load_sliced_audio):
     """Tests if librosa.load generated mel spectrogram matches sliced mel spectrogram"""
-    spectrogram = librosa.feature.melspectrogram(y=load_sliced_audio[0], sr=22050)
+    spectrogram = librosa.feature.melspectrogram(y=load_sliced_audio[0], sr=22050, hop_length=2048)
     assert np.array_equiv(load_librosa_mel_spectrogram, spectrogram)
     # check shapes of rest of slices
     for item in load_sliced_audio:
         assert (
             load_librosa_mel_spectrogram.shape
-            == librosa.feature.melspectrogram(y=item, sr=22050).shape
+            == librosa.feature.melspectrogram(y=item, sr=22050, hop_length=2048).shape
         )
 
 
@@ -61,6 +61,7 @@ def test_convert_sound_to_image(sample_wav_path):
     """Tests converting sound file to one image."""
     image = app.convert_sound_to_image(sample_wav_path)
     assert isinstance(image, Image.Image)
+    assert image.size == (323, 128)
 
 
 @patch(f"{MODULE_PATH}.audio_slicer")
@@ -68,7 +69,9 @@ def test_duration_and_segments_seconds_not_passed(patched_audio_slicer, sample_w
     librosa_options_overwritten_in_function = ("duration", "desired_segments_seconds")
     expected_value = 20
 
-    with patch(f"{MODULE_PATH}.spectrogram_to_image"), patch(f"{MODULE_PATH}.log_spectrogram"):
+    with patch(f"{MODULE_PATH}.spectrogram_to_image"), patch(
+        f"{MODULE_PATH}.log_spectrogram"
+    ), patch("librosa.feature.melspectrogram"):
         app.convert_sound_to_image(sample_wav_path, duration=20, desired_segments_seconds=13)
         assert all(
             patched_audio_slicer.call_args.kwargs[key] == expected_value

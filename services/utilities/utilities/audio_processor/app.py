@@ -1,5 +1,5 @@
 from os import PathLike
-from typing import Iterator, TypeAlias
+from typing import Iterator, List, TypeAlias
 
 import joblib
 import librosa
@@ -15,7 +15,7 @@ def audio_slicer(
     desired_segments_seconds: int = 5,
     sample_rate: int = 22050,
     duration: int = 90,
-) -> Iterator[NDArray]:
+) -> List[NDArray]:
     """Converts an audio stream to a mel spectrogram.
 
     :param file_path: Path to audio file
@@ -26,6 +26,15 @@ def audio_slicer(
     :return: Power Mel Spectrogram constructed from audio file with n_mels=128
     """
     audio_data, sr = librosa.load(file_path, sr=sample_rate, mono=True, duration=duration)
+    delta = 0.05
+    real_audio_length = audio_data.size / sr
+    multi_segments_flag = ((real_audio_length + delta) / desired_segments_seconds) >= 2
+    if (desired_segments_seconds - real_audio_length) < delta and multi_segments_flag is False:
+        audio_data = librosa.util.fix_length(
+            audio_data, size=sr * desired_segments_seconds, mode="edge"
+        )
+    elif multi_segments_flag is False:
+        raise ValueError(f"{duration} not within delta={delta} seconds and cannot be processed")
     window_size = sr * desired_segments_seconds
     audio_windowed = np.array_split(
         audio_data, np.arange(window_size, audio_data.size, window_size)
@@ -96,8 +105,10 @@ def convert_sound_to_image(
         "duration": duration,
     }
     spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
-
-    log_spec = log_spectrogram(spectrogram_gen)
+    spectrogram = librosa.feature.melspectrogram(
+        y=spectrogram_gen[0], hop_length=2048, sr=librosa_options.get("sample_rate", 22050)
+    )
+    log_spec = log_spectrogram(spectrogram)
     image = spectrogram_to_image(log_spec)
     return image
 
@@ -126,6 +137,7 @@ def generate_sound_images(
                     y=data,
                     sr=librosa_options.get("sample_rate", 22050),
                     n_mels=128,
+                    hop_length=2048,
                 )
             )
         )
