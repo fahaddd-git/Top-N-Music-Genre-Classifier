@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "neural-network"
-version = "0.1.0"
+version = "0.2.0"
 description = "Model-generating neural network service"
 authors = [
     "Fahad Awan",
@@ -21,7 +21,7 @@ typer = "^0.7.0"
 rich = "^12.6.0"
 
 [tool.poetry.group.local.dependencies]
-utilities = {path = "../utilities"}
+utilities = {path = "../utilities", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.3"

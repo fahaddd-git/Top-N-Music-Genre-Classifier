@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "prediction-api"
-version = "0.1.0"
+version = "0.2.0"
 description = "Genre prediction API"
 authors = [
     "Fahad Awan",
@@ -21,7 +21,7 @@ tensorflow-cpu = "^2.10.0"
 python-dotenv = "^0.21.0"
 
 [tool.poetry.group.local.dependencies]
-utilities = {path = "../utilities"}
+utilities = {path = "../utilities", develop = true}
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^7.1.3"
