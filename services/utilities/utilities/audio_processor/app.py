@@ -19,7 +19,7 @@ def audio_slicer(
     """Converts an audio stream to a mel spectrogram.
 
     :param file_path: path to an audio file encoded with a Librosa-compatible codec
-    :param desired_segments_seconds: length of each audio file slice, in seconds (default
+    :param desired_segments_seconds: length of each audio file slice, in seconds (default: 5)
     :param sample_rate: sample rate to downsample audio to, in Hz  (default: 22050)
     :param duration: maximum length of audio file to load, in seconds (default: 30)
     :raise ValueError: if the passed parameters result in truncated spectrogram segments
