@@ -3,14 +3,7 @@ import pytest
 
 @pytest.fixture()
 def genres():
-    return set(
-        [
-            "classical",
-            "blues",
-            "metal",
-            "pop",
-        ]
-    )
+    return {"classical", "blues", "metal", "pop"}
 
 
 @pytest.fixture()

@@ -1,2 +1,2 @@
-class IncorrectFilename(Exception):
+class IncorrectFilename(ValueError):
     pass

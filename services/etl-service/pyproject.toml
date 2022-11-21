@@ -9,8 +9,14 @@ authors = [
 ]
 packages = [{include = "etl_service"}]
 
+[tool.poetry.scripts]
+start = "cli.main:main"
+
 [tool.poetry.dependencies]
 python = "~3.10"
+typer = "^0.7.0"
+rich = "^12.6.0"
+sqlalchemy = "^1.4.42"
 
 [tool.poetry.group.local.dependencies]
 utilities = {path = "../utilities", develop = true}
