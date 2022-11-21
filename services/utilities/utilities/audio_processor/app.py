@@ -108,7 +108,7 @@ def convert_sound_to_image(
     try:
         spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
     except (ValueError, ZeroDivisionError) as error:
-        raise error  # explicitly raising to give caller a better idea of error source
+        raise error
 
     # Logic to convert STFTs to mel spectrogram inspired by:
     # URL:  https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html
@@ -141,7 +141,7 @@ def generate_sound_images(
     try:
         spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
     except (ValueError, ZeroDivisionError) as error:
-        raise error  # explicitly raising to give caller a better idea of error source
+        raise error
 
     def mapper(data):
         return spectrogram_to_image(
