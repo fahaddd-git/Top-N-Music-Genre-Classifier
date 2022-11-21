@@ -18,13 +18,16 @@ def audio_slicer(
 ) -> List[NDArray]:
     """Converts an audio stream to a mel spectrogram.
 
-    :param file_path: Path to audio file
-    :param desired_segments_seconds: Seconds of audio to slice when creating the mel spectrogram.
-        Equal segments of this param value are made as the duration of the audio file allows.
-    :param sample_rate: Sample rate to down sample audio to, in Hz
-    :param duration: How long of audio file to load. Less is loaded if clip length < duration
+    :param file_path: path to an audio file encoded with a Librosa-compatible codec
+    :param desired_segments_seconds: length of each audio file slice, in seconds (default
+    :param sample_rate: sample rate to downsample audio to, in Hz  (default: 22050)
+    :param duration: maximum length of audio file to load, in seconds (default: 30)
+    :raise ValueError: if the passed parameters result in truncated spectrogram segments
     :return: Power Mel Spectrogram constructed from audio file with n_mels=128
     """
+    if desired_segments_seconds <= 0 or duration <= 0:
+        raise ValueError("Passed values would create empty spectrogram segments")
+
     audio_data, sr = librosa.load(file_path, sr=sample_rate, mono=True, duration=duration)
     delta = 0.05
     real_audio_length = audio_data.size / sr
@@ -91,12 +94,10 @@ def convert_sound_to_image(
 ) -> PILImage:
     """Interface for converting sound to single image.
 
-    Default ``librosa_options`` are:
-        * sample_rate: int = 22050
-
-    :param sound_file_path: Path to audio file
-    :param duration: Length of audio file to generate spectrogram for in seconds (default 30)
-    :param librosa_options: Options used by Librosa for creating the spectrogram
+    :param sound_file_path: path to an audio file encoded with a Librosa-compatible codec
+    :param duration: Length of audio file to generate spectrogram for in seconds (default: 30)
+    :keyword sample_rate: sample rate to downsample audio to, in Hz  (default: 22050)
+    :raise ValueError: if the passed parameters result in truncated spectrogram segments
     :return: Log Mel Spectrogram as PIL Image instance
     """
     librosa_options = {
@@ -104,7 +105,14 @@ def convert_sound_to_image(
         "desired_segments_seconds": duration,
         "duration": duration,
     }
-    spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
+    try:
+        spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
+    except (ValueError, ZeroDivisionError) as error:
+        raise error  # explicitly raising to give caller a better idea of error source
+
+    # Logic to convert STFTs to mel spectrogram inspired by:
+    # URL:  https://librosa.org/doc/main/generated/librosa.feature.melspectrogram.html
+    # Date: 11/12/2022
     spectrogram = librosa.feature.melspectrogram(
         y=spectrogram_gen[0], hop_length=2048, sr=librosa_options.get("sample_rate", 22050)
     )
@@ -116,19 +124,24 @@ def convert_sound_to_image(
 def generate_sound_images(
     sound_file_path: str | PathLike, n_threads: int = 2, **librosa_options: int
 ) -> Iterator[PILImage]:
-    """Interface for converting sound to multiple images
+    """Interface for converting sound to multiple images. The sound file is split into a maximum
+    of ``duration // desired_segments_seconds`` segments of equal length, until the audio file
+    is exhausted.
 
-    Default ``librosa_options`` are:
-        * desired_segments_seconds: int = 5
-        * sample_rate: int = 22050
-        * duration: int = 30
-
-    :param sound_file_path: Path to audio file
-    :param n_threads: Number of threads to use when processing spectrogram
-    :param librosa_options: Options used by Librosa for creating the spectrogram
+    :param sound_file_path: path to an audio file encoded with a Librosa-compatible codec
+    :param n_threads: number of concurrent threads to use when processing spectrograms (default: 2)
+    :keyword desired_segments_seconds: length of each audio file slice, in seconds (default: 5)
+    :keyword sample_rate: sample rate to downsample audio to, in Hz  (default: 22050)
+    :keyword duration: maximum length of audio file to load, in seconds (default: 30)
+    :raise ValueError: if the passed parameters result in truncated spectrogram segments
     :return: Generator of Log Mel Spectrograms as PIL Image instances
     """
-    spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
+    if n_threads < 1:
+        raise ValueError("Number of threads must be at least 1")
+    try:
+        spectrogram_gen = audio_slicer(sound_file_path, **librosa_options)
+    except (ValueError, ZeroDivisionError) as error:
+        raise error  # explicitly raising to give caller a better idea of error source
 
     def mapper(data):
         return spectrogram_to_image(
