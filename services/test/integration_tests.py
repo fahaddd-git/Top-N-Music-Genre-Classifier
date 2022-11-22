@@ -15,7 +15,6 @@ GTZAN_DIR = Path.home() / "gtzan"
 
 def install_services():
     subprocess.run(["./install-services.sh"], cwd="../")
-    subprocess.run(["pip", "install", "gdown"])
 
 
 def download_dataset():

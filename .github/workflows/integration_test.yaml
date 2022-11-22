@@ -10,10 +10,15 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
+
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: "3.10"
+
+      - name: Install gdown
+        run: pip install gdown
+
       - name: Run test
         run: python integration_tests.py
         working-directory: "services/test/"
