@@ -665,7 +665,7 @@ url = "../utilities"
 [metadata]
 lock-version = "1.1"
 python-versions = "~3.10"
-content-hash = "a4ac23ca092f610e8f0fb7cc2123b9c0780edc05a7b7f1dd29c7da8d7fbd1d4d"
+content-hash = "26b55a3fa9251333fd012a4967428f211a34011edeccf57e33d0809cba9c8012"
 
 [metadata.files]
 appdirs = [
