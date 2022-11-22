@@ -1,0 +1,19 @@
+# This docker workflow follows pretty much the same steps as used in another of our projects.
+# While this is a pretty standard workflow, we are including a citation for good measure. This
+# includes this docker compose file and the Dockerfiles it calls:
+#   URL: https://github.com/donatosaur/kuba-libre/blob/main/docker-compose.yml
+#   URL: https://github.com/donatosaur/kuba-libre/blob/main/marble-game/Dockerfile
+#   URL: https://github.com/donatosaur/kuba-libre/blob/main/api/Dockerfile
+#   Date: 11/22/22
+
+services:
+  utilities:
+    build: ./services/utilities
+    image: utilities
+  prediction-api:
+    build: ./services/prediction-api
+    image: prediction-api
+    ports:
+      - ${PORT:-8000}:${PORT:-8000}
+    depends_on:
+      - utilities

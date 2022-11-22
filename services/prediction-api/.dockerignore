@@ -1,0 +1,12 @@
+# python artifacts
+__pycache__/
+
+# pytest artifacts
+*pytest_cache/
+.coverage
+
+# IDE artifacts
+.idea/
+
+# env configuration
+.env
