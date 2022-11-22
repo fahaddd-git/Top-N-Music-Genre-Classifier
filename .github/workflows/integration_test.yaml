@@ -25,6 +25,9 @@ jobs:
       - name: Install gdown
         run: pip install gdown
 
+      - name: Install sndfile dep for utilities Librosa
+        run: sudo apt-get install libsndfile1-dev
+
       - name: Run test
         run: python integration_tests.py
         working-directory: "services/test/"
