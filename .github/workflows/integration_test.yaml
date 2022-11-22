@@ -16,6 +16,9 @@ jobs:
         with:
           python-version: "3.10"
 
+      - name: Install zsh
+        run: sudo apt install zsh
+
       - name: Install gdown
         run: pip install gdown
 

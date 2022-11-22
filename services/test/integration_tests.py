@@ -19,10 +19,10 @@ def install_services():
 
 def download_dataset():
     url = "https://drive.google.com/uc?id=19LzzsniBzvpp5UmJ24cXMt4kPY8UxyQC"
-    gdown.download(url, OUTPUT, quiet=False)
+    gdown.download(url, str(OUTPUT), quiet=False)
 
-    with zipfile.ZipFile(OUTPUT, "r") as zip_ref:
-        zip_ref.extractall(OUTPUT_EXTRACTED)
+    with zipfile.ZipFile(str(OUTPUT), "r") as zip_ref:
+        zip_ref.extractall(str(OUTPUT_EXTRACTED))
 
     if not GTZAN_DIR.exists():
         GTZAN_DIR.mkdir()
