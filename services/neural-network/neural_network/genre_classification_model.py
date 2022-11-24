@@ -1,6 +1,7 @@
 import json
 from os import PathLike
 from pathlib import Path
+from rich import print
 
 import tensorflow as tf
 from neural_network.data_ingestion_helpers import SpectrogramData
@@ -14,7 +15,7 @@ class GenreClassificationModel:
         self._spectrogram_data = spectrogram_data
         self._model = tf.keras.models.Sequential()
         self._add_preprocessing_layers()
-        self._add_normalization_layers()
+        # self._add_normalization_layers()
         self._add_convolutional_layers()
         self._compile()
 
@@ -22,7 +23,7 @@ class GenreClassificationModel:
         """Preprocess and attach input tensor"""
         # Currently, most images are approx 128x323 to 128x326, for an aspect ratio of about 0.4;
         # ideally, this logic should be made dynamic, but for now we can resize to 100x250
-        resize_to_dimension = (100, 250)
+        resize_to_dimension = (100, 252)
         self._model.add(
             tf.keras.layers.Resizing(
                 *resize_to_dimension,
@@ -33,7 +34,13 @@ class GenreClassificationModel:
 
     def _add_normalization_layers(self) -> None:
         """Attach normalization tensors"""
-        pass
+        # Each channel has 256 possible color values in 0..255 whether grayscale or not:
+        #   https://en.wikipedia.org/wiki/List_of_monochrome_and_RGB_color_formats#8-bit_Grayscale
+        #   https://en.wikipedia.org/wiki/List_of_monochrome_and_RGB_color_formats#24-bit_RGB
+        # So a scale of 1/255 will do as suggested by the Rescaling tensor documentation, see:
+        #   https://www.tensorflow.org/api_docs/python/tf/keras/layers/Rescaling#for_instance
+        scale = 1.0 / 255.0
+        self._model.add(tf.keras.layers.Rescaling(scale=scale, name="rescale_pixels"))
 
     def _add_convolutional_layers(self) -> None:
         """Attach convolutional layers"""
@@ -41,22 +48,28 @@ class GenreClassificationModel:
         #   https://www.tensorflow.org/tutorials/audio/simple_audio
         #   https://www.tensorflow.org/tutorials/images/data_augmentation#train_a_model
         # Date: 11/3/2022
-        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
-        self._model.add(tf.keras.layers.MaxPooling2D()),
-        self._model.add(tf.keras.layers.BatchNormalization())
+        filters = (32, 32, 64)
+        kernels = (1, 3, 3, )
+        for args in zip(filters, kernels):
+            self._model.add(tf.keras.layers.Conv2D(*args, activation="relu"))
+            self._model.add(tf.keras.layers.MaxPooling2D((2, 5))),
+            self._model.add(tf.keras.layers.BatchNormalization()),
 
-        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
-        self._model.add(tf.keras.layers.MaxPooling2D()),
-        self._model.add(tf.keras.layers.BatchNormalization()),
+        # # conv layers
+        # self._model.add(tf.keras.layers.Conv2D(8, 3, activation="relu")),
+        # self._model.add(tf.keras.layers.Conv2D(16, 3, activation="relu")),
 
-        self._model.add(tf.keras.layers.Conv2D(32, 3, activation="relu")),
-        self._model.add(tf.keras.layers.MaxPooling2D()),
-        self._model.add(tf.keras.layers.BatchNormalization()),
+        # self._model.add(tf.keras.layers.MaxPooling2D()),
+        # self._model.add(tf.keras.layers.BatchNormalization()),
+        # self._model.add(tf.keras.layers.Conv2D(32, 13, activation="relu")),
 
-        self._model.add(tf.keras.layers.Dropout(0.25)),
+        # self._model.add(tf.keras.layers.MaxPooling2D()),
+        # self._model.add(tf.keras.layers.BatchNormalization()),
+
+        self._model.add(tf.keras.layers.Dropout(0.6)),
         self._model.add(tf.keras.layers.Flatten()),
-        self._model.add(tf.keras.layers.Dense(128, activation="relu")),
-        self._model.add(tf.keras.layers.Dropout(0.5)),
+        self._model.add(tf.keras.layers.Dense(256, activation="relu")),
+        self._model.add(tf.keras.layers.Dropout(0.15)),
         self._model.add(
             tf.keras.layers.Dense(
                 self._spectrogram_data.number_of_labels,
@@ -72,6 +85,10 @@ class GenreClassificationModel:
             loss=tf.keras.losses.SparseCategoricalCrossentropy(from_logits=False),
             metrics=["accuracy"],  # track fraction correctly identified
         )
+        self._model.summary(
+            line_length=120,
+            print_fn=print,
+        )
 
     def fit(self, epochs: int) -> None:
         """Fit the model based on the initial SpectrogramData"""
@@ -80,7 +97,7 @@ class GenreClassificationModel:
             batch_size=32,
             epochs=epochs,
             verbose="auto",
-            # callbacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2),
+            callbacks=tf.keras.callbacks.EarlyStopping(verbose=1, patience=2),
         )
 
     def evaluate(self) -> dict:
