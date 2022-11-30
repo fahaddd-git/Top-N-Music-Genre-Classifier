@@ -67,6 +67,6 @@
     "comma-dangle": ["error", "only-multiline"],
     "no-multi-spaces": ["error", { "ignoreEOLComments": true }],
     "max-len": ["error", { "code": 100 }],
-    "linebreak-style": ["error", "unix"]
+    "linebreak-style": ["warn", "unix"]
   }
 }
