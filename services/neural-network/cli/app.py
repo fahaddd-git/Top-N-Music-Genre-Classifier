@@ -19,7 +19,7 @@ def generate_model(
     output_directory: Path = typer.Option(
         ...,
         "--output",
-        exists=True,
+        exists=False,
         file_okay=False,
         dir_okay=True,
         writable=True,
