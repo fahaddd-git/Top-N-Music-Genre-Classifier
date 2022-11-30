@@ -17,6 +17,7 @@
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build && rsync -av --delete build/ ../services/prediction-api/prediction_api/static/",
+    "build-windows": "react-scripts build && robocopy build/ ../services/prediction-api/prediction_api/static /MIR",
     "build-only": "react-scripts build",
     "lint": "eslint src --ext .ts,.tsx",
     "test": "react-scripts test && run lint",
